@@ -95,6 +95,11 @@
             color: white;
         }
 
+        .btn-cover-letter {
+            background: #fd7e14;
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -319,13 +324,191 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+
+        /* Cover Letter Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 900px;
+            max-height: 95vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+            opacity: 0.8;
+        }
+
+        .close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cover-letter-preview {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 20px;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .cover-letter-header {
+            text-align: right;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .cover-letter-date {
+            margin-bottom: 30px;
+        }
+
+        .cover-letter-body {
+            margin-bottom: 30px;
+        }
+
+        .cover-letter-signature {
+            margin-top: 40px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            background: #f8f9fa;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .template-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .template-card:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .template-card.selected {
+            border-color: #667eea;
+            background: #e6f3ff;
+        }
+
+        .template-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .template-description {
+            font-size: 14px;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
             <h1>🤖 AI Job Search Assistant</h1>
-            <p>Find your dream job with AI-powered resume tailoring</p>
+            <p>Find your dream job with AI-powered resume tailoring & cover letters</p>
         </header>
 
         <div class="card">
@@ -398,6 +581,87 @@
                     </div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Cover Letter Modal -->
+    <div id="coverLetterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✉️ AI Cover Letter Generator</h3>
+                <button class="close" onclick="closeCoverLetterModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Choose Cover Letter Template:</label>
+                    <div class="template-selector" id="templateSelector">
+                        <div class="template-card selected" data-template="professional">
+                            <div class="template-name">🏢 Professional</div>
+                            <div class="template-description">Formal tone, traditional structure</div>
+                        </div>
+                        <div class="template-card" data-template="creative">
+                            <div class="template-name">🎨 Creative</div>
+                            <div class="template-description">Engaging tone, storytelling approach</div>
+                        </div>
+                        <div class="template-card" data-template="technical">
+                            <div class="template-name">⚙️ Technical</div>
+                            <div class="template-description">Skills-focused, technical expertise</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="applicantName">Your Full Name:</label>
+                        <input type="text" id="applicantName" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantEmail">Your Email:</label>
+                        <input type="email" id="applicantEmail" placeholder="john.doe@email.com">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="applicantPhone">Your Phone:</label>
+                        <input type="tel" id="applicantPhone" placeholder="(555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantAddress">Your Address:</label>
+                        <input type="text" id="applicantAddress" placeholder="City, State">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hiringManager">Hiring Manager Name:</label>
+                        <input type="text" id="hiringManager" placeholder="Leave blank if unknown">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyAddress">Company Address:</label>
+                        <input type="text" id="companyAddress" placeholder="Company City, State">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="personalNote">Personal Note/Why This Company:</label>
+                    <textarea id="personalNote" placeholder="What excites you about this company? Any personal connections or specific reasons for applying..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="keyAchievements">Key Achievements (1-2 sentences):</label>
+                    <textarea id="keyAchievements" placeholder="Brief summary of your most relevant accomplishments..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="generateCoverLetter()">🤖 Generate Cover Letter</button>
+
+                <div id="coverLetterPreview" class="cover-letter-preview" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCoverLetterModal()">Close</button>
+                <button class="btn btn-secondary" onclick="downloadCoverLetter()" id="downloadBtn" style="display: none;">Download</button>
+                <button class="btn btn-success" onclick="copyCoverLetter()" id="copyBtn" style="display: none;">Copy to Clipboard</button>
+            </div>
         </div>
     </div>
 
@@ -483,6 +747,41 @@
         let currentJobs = [...jobDatabase];
         let applications = [];
         let savedJobs = [];
+        let currentJobForCoverLetter = null;
+
+        // Cover Letter Templates
+        const coverLetterTemplates = {
+            professional: {
+                greeting: (hiringManager, company) => 
+                    hiringManager ? `Dear ${hiringManager},` : `Dear Hiring Manager,`,
+                opening: (position, company) => 
+                    `I am writing to express my strong interest in the ${position} position at ${company}. With my extensive background in software development and proven track record of delivering exceptional results, I am confident that I would be a valuable addition to your team.`,
+                body: (achievements, personalNote, position) => 
+                    `${achievements}\n\n${personalNote}\n\nI am particularly drawn to this ${position} role because it aligns perfectly with my career goals and expertise. I am excited about the opportunity to contribute to your team's continued success.`,
+                closing: () => 
+                    `Thank you for considering my application. I look forward to the opportunity to discuss how my skills and experience can contribute to your organization's success. I am available for an interview at your convenience.`
+            },
+            creative: {
+                greeting: (hiringManager, company) => 
+                    hiringManager ? `Hello ${hiringManager},` : `Hello there!`,
+                opening: (position, company) => 
+                    `I couldn't help but get excited when I discovered the ${position} opening at ${company}. It's rare to find a role that feels like it was crafted specifically for someone with my background and passion for innovative technology solutions.`,
+                body: (achievements, personalNote, position) => 
+                    `Here's what I bring to the table: ${achievements}\n\n${personalNote}\n\nWhat really draws me to this opportunity is the chance to blend technical expertise with creative problem-solving. I thrive in environments where I can push boundaries and create meaningful solutions.`,
+                closing: () => 
+                    `I'd love the chance to chat about how we can create something amazing together. Feel free to reach out - I'm always up for a good conversation about technology and innovation!`
+            },
+            technical: {
+                greeting: (hiringManager, company) => 
+                    hiringManager ? `Dear ${hiringManager},` : `Dear Technical Hiring Team,`,
+                opening: (position, company) => 
+                    `I am submitting my application for the ${position} role at ${company}. My technical background and hands-on experience with modern development practices make me well-suited for this position.`,
+                body: (achievements, personalNote, position) => 
+                    `Technical Highlights: ${achievements}\n\n${personalNote}\n\nI am particularly interested in this role because it offers the opportunity to work with cutting-edge technologies and contribute to scalable, robust systems. My experience spans the full software development lifecycle, from architecture design to deployment and maintenance.`,
+                closing: () => 
+                    `I would welcome the opportunity to discuss the technical requirements of this role and how my experience aligns with your team's needs. I am available for technical interviews and coding assessments at your convenience.`
+            }
+        };
 
         // File upload functionality
         function setupFileUpload() {
@@ -573,11 +872,9 @@
             } else if (file.type === 'application/pdf') {
                 reader.onload = async (e) => {
                     try {
-                        // For PDF files, we'll extract text (simplified approach)
                         clearInterval(progressInterval);
                         progressFill.style.width = '100%';
                         
-                        // Simulated PDF text extraction (in real app, you'd use a PDF library)
                         setTimeout(() => {
                             const samplePdfText = `RESUME - ${file.name}
 
@@ -623,7 +920,6 @@ JavaScript, React, Node.js, Python, SQL, Git, Docker, AWS
                         clearInterval(progressInterval);
                         progressFill.style.width = '100%';
                         
-                        // Simulated Word document processing
                         setTimeout(() => {
                             const sampleWordText = `RESUME - ${file.name}
 
@@ -667,6 +963,153 @@ Tools: Git, Docker, Kubernetes, AWS
                 };
                 reader.readAsArrayBuffer(file);
             }
+        }
+
+        // Cover Letter Functions
+        function openCoverLetterModal(jobId) {
+            currentJobForCoverLetter = jobDatabase.find(j => j.id === jobId);
+            if (!currentJobForCoverLetter) return;
+
+            // Load saved user info
+            loadUserInfo();
+            
+            // Clear previous content
+            document.getElementById('coverLetterPreview').style.display = 'none';
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('copyBtn').style.display = 'none';
+            
+            document.getElementById('coverLetterModal').style.display = 'block';
+            showNotification(`Creating cover letter for ${currentJobForCoverLetter.title}`, 'info');
+        }
+
+        function closeCoverLetterModal() {
+            document.getElementById('coverLetterModal').style.display = 'none';
+            currentJobForCoverLetter = null;
+        }
+
+        function loadUserInfo() {
+            // Load saved user information from localStorage
+            const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+            
+            document.getElementById('applicantName').value = userInfo.name || '';
+            document.getElementById('applicantEmail').value = userInfo.email || '';
+            document.getElementById('applicantPhone').value = userInfo.phone || '';
+            document.getElementById('applicantAddress').value = userInfo.address || '';
+        }
+
+        function saveUserInfo() {
+            // Save user information for future use
+            const userInfo = {
+                name: document.getElementById('applicantName').value,
+                email: document.getElementById('applicantEmail').value,
+                phone: document.getElementById('applicantPhone').value,
+                address: document.getElementById('applicantAddress').value
+            };
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        }
+
+        function setupTemplateSelector() {
+            const templateCards = document.querySelectorAll('.template-card');
+            templateCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    templateCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                });
+            });
+        }
+
+        function getSelectedTemplate() {
+            const selectedCard = document.querySelector('.template-card.selected');
+            return selectedCard ? selectedCard.dataset.template : 'professional';
+        }
+
+        function generateCoverLetter() {
+            if (!currentJobForCoverLetter) return;
+
+            // Save user info for future use
+            saveUserInfo();
+
+            // Get form data
+            const applicantName = document.getElementById('applicantName').value;
+            const applicantEmail = document.getElementById('applicantEmail').value;
+            const applicantPhone = document.getElementById('applicantPhone').value;
+            const applicantAddress = document.getElementById('applicantAddress').value;
+            const hiringManager = document.getElementById('hiringManager').value;
+            const companyAddress = document.getElementById('companyAddress').value;
+            const personalNote = document.getElementById('personalNote').value;
+            const keyAchievements = document.getElementById('keyAchievements').value;
+
+            // Validation
+            if (!applicantName || !applicantEmail) {
+                showNotification('Please fill in your name and email', 'error');
+                return;
+            }
+
+            if (!personalNote || !keyAchievements) {
+                showNotification('Please add your personal note and key achievements', 'error');
+                return;
+            }
+
+            const selectedTemplate = getSelectedTemplate();
+            const template = coverLetterTemplates[selectedTemplate];
+
+            // Generate current date
+            const currentDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Build cover letter
+            const coverLetter = `${applicantName}
+${applicantEmail}
+${applicantPhone}
+${applicantAddress}
+
+${currentDate}
+
+${currentJobForCoverLetter.company}
+${companyAddress || currentJobForCoverLetter.location}
+
+${template.greeting(hiringManager, currentJobForCoverLetter.company)}
+
+${template.opening(currentJobForCoverLetter.title, currentJobForCoverLetter.company)}
+
+${template.body(keyAchievements, personalNote, currentJobForCoverLetter.title)}
+
+${template.closing()}
+
+Sincerely,
+${applicantName}`;
+
+            // Display the cover letter
+            document.getElementById('coverLetterPreview').textContent = coverLetter;
+            document.getElementById('coverLetterPreview').style.display = 'block';
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+            document.getElementById('copyBtn').style.display = 'inline-block';
+
+            showNotification('Cover letter generated successfully!', 'success');
+        }
+
+        function copyCoverLetter() {
+            const coverLetterText = document.getElementById('coverLetterPreview').textContent;
+            navigator.clipboard.writeText(coverLetterText).then(() => {
+                showNotification('Cover letter copied to clipboard!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy to clipboard', 'error');
+            });
+        }
+
+        function downloadCoverLetter() {
+            const coverLetterText = document.getElementById('coverLetterPreview').textContent;
+            const blob = new Blob([coverLetterText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Cover_Letter_${currentJobForCoverLetter.company}_${currentJobForCoverLetter.title.replace(/\s+/g, '_')}.txt`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Cover letter downloaded!', 'success');
         }
 
         // Clear resume function
@@ -763,6 +1206,7 @@ Tools: Git, Docker, Kubernetes, AWS
                     <div class="job-actions">
                         <button class="btn btn-secondary" onclick="viewJobDetails('${job.id}')">View Details</button>
                         <button class="btn btn-primary" onclick="tailorResume('${job.id}')">Tailor Resume</button>
+                        <button class="btn btn-cover-letter" onclick="openCoverLetterModal('${job.id}')">Cover Letter</button>
                         <button class="btn btn-success" onclick="applyToJob('${job.id}')">Quick Apply</button>
                     </div>
                 </div>
@@ -883,12 +1327,23 @@ Your resume is well-optimized for Applicant Tracking Systems!`);
             document.getElementById('savedJobs').textContent = savedJobs.length;
         }
 
+        // Close modal when clicking outside
+        window.onclick = (event) => {
+            const modal = document.getElementById('coverLetterModal');
+            if (event.target === modal) {
+                closeCoverLetterModal();
+            }
+        };
+
         // Initialize app
         function initializeApp() {
             console.log('📊 Initializing AI Job Search Assistant...');
             
             // Setup file upload
             setupFileUpload();
+            
+            // Setup template selector
+            setupTemplateSelector();
             
             // Load saved resume
             const savedResume = localStorage.getItem('masterResume');
@@ -920,7 +1375,7 @@ Your resume is well-optimized for Applicant Tracking Systems!`);
             updateStats();
 
             console.log(`✅ Loaded ${jobDatabase.length} jobs successfully!`);
-            showNotification('AI Job Search Assistant ready!', 'success');
+            showNotification('AI Job Search Assistant ready with Cover Letter Generator!', 'success');
         }
 
         // Start the app when page loads
