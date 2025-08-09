@@ -325,7 +325,7 @@
             flex-wrap: wrap;
         }
 
-        /* Cover Letter Modal */
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -502,6 +502,90 @@
             font-size: 14px;
             color: #6c757d;
         }
+
+        /* Tailored Resume Modal */
+        .resume-preview {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 20px;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            white-space: pre-line;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .match-score {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .match-score .score-number {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .suggestions-list {
+            background: #f8f9fa;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .suggestions-list h5 {
+            color: #17a2b8;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .suggestions-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .suggestions-list li {
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 20px;
+        }
+
+        .modal-tab {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6c757d;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .modal-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -581,6 +665,64 @@
                     </div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Tailored Resume Modal -->
+    <div id="tailoredResumeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🎯 AI-Tailored Resume</h3>
+                <button class="close" onclick="closeTailoredResumeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-tabs">
+                    <button class="modal-tab active" onclick="switchTab('preview')">📄 Preview</button>
+                    <button class="modal-tab" onclick="switchTab('analysis')">📊 Analysis</button>
+                </div>
+
+                <div id="previewTab" class="tab-content active">
+                    <div id="matchScoreDisplay" class="match-score">
+                        <span class="score-number" id="matchScoreNumber">0%</span>
+                        <span>Match Score</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Your AI-Optimized Resume:</label>
+                        <textarea id="tailoredResumeContent" class="resume-editor" style="min-height: 300px;" 
+                                  placeholder="Your tailored resume will appear here..."></textarea>
+                    </div>
+                </div>
+
+                <div id="analysisTab" class="tab-content">
+                    <div id="suggestionsList" class="suggestions-list">
+                        <h5>💡 AI Recommendations</h5>
+                        <ul id="suggestionsContent">
+                            <li>Generating personalized suggestions...</li>
+                        </ul>
+                    </div>
+
+                    <div id="keywordAnalysis" class="suggestions-list">
+                        <h5>🔑 Keywords Added</h5>
+                        <ul id="keywordsContent">
+                            <li>Analyzing job requirements...</li>
+                        </ul>
+                    </div>
+
+                    <div id="improvementAreas" class="suggestions-list">
+                        <h5>📈 Areas of Improvement</h5>
+                        <ul id="improvementsContent">
+                            <li>Evaluating resume strength...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTailoredResumeModal()">Close</button>
+                <button class="btn btn-secondary" onclick="downloadTailoredResume()">📥 Download Resume</button>
+                <button class="btn btn-primary" onclick="copyTailoredResume()">📋 Copy to Clipboard</button>
+                <button class="btn btn-success" onclick="applyWithTailoredResume()">🚀 Apply with This Resume</button>
+            </div>
         </div>
     </div>
 
@@ -748,6 +890,8 @@
         let applications = [];
         let savedJobs = [];
         let currentJobForCoverLetter = null;
+        let currentTailoredResume = null;
+        let currentTailoredJob = null;
 
         // Cover Letter Templates
         const coverLetterTemplates = {
@@ -965,7 +1109,235 @@ Tools: Git, Docker, Kubernetes, AWS
             }
         }
 
-        // Cover Letter Functions
+        // Tailored Resume Functions
+        function openTailoredResumeModal(jobId, tailoredData) {
+            currentTailoredJob = jobDatabase.find(j => j.id === jobId);
+            currentTailoredResume = tailoredData;
+            
+            if (!currentTailoredJob || !currentTailoredResume) return;
+
+            // Update match score
+            document.getElementById('matchScoreNumber').textContent = currentTailoredResume.matchScore + '%';
+            
+            // Update tailored resume content
+            document.getElementById('tailoredResumeContent').value = currentTailoredResume.resume;
+            
+            // Update suggestions
+            updateAnalysisTab(currentTailoredResume);
+            
+            // Show modal
+            document.getElementById('tailoredResumeModal').style.display = 'block';
+        }
+
+        function closeTailoredResumeModal() {
+            document.getElementById('tailoredResumeModal').style.display = 'none';
+            currentTailoredResume = null;
+            currentTailoredJob = null;
+        }
+
+        function switchTab(tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.modal-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        function updateAnalysisTab(tailoredData) {
+            // Update suggestions
+            const suggestionsHtml = tailoredData.suggestions.map(suggestion => 
+                `<li>${suggestion}</li>`
+            ).join('');
+            document.getElementById('suggestionsContent').innerHTML = suggestionsHtml;
+            
+            // Update keywords
+            const keywordsHtml = tailoredData.keywords.slice(0, 8).map(keyword => 
+                `<li><strong>${keyword}</strong> - Enhanced for this position</li>`
+            ).join('');
+            document.getElementById('keywordsContent').innerHTML = keywordsHtml;
+            
+            // Update improvements
+            const improvements = generateImprovements(tailoredData.matchScore);
+            const improvementsHtml = improvements.map(improvement => 
+                `<li>${improvement}</li>`
+            ).join('');
+            document.getElementById('improvementsContent').innerHTML = improvementsHtml;
+        }
+
+        function generateImprovements(matchScore) {
+            const improvements = [];
+            
+            if (matchScore < 85) {
+                improvements.push('Consider adding more specific technical skills mentioned in the job posting');
+                improvements.push('Include quantifiable achievements with numbers and percentages');
+            }
+            
+            if (matchScore < 90) {
+                improvements.push('Add industry-specific certifications if applicable');
+                improvements.push('Expand on leadership and project management experience');
+            }
+            
+            if (matchScore < 95) {
+                improvements.push('Include relevant side projects or portfolio links');
+                improvements.push('Add soft skills that align with company culture');
+            }
+            
+            if (improvements.length === 0) {
+                improvements.push('Your resume is excellently optimized for this position!');
+                improvements.push('Consider customizing the summary section further');
+                improvements.push('Ensure contact information is current and professional');
+            }
+            
+            return improvements;
+        }
+
+        function downloadTailoredResume() {
+            if (!currentTailoredResume || !currentTailoredJob) return;
+            
+            const resumeText = document.getElementById('tailoredResumeContent').value;
+            const blob = new Blob([resumeText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Tailored_Resume_${currentTailoredJob.company}_${currentTailoredJob.title.replace(/\s+/g, '_')}.txt`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Tailored resume downloaded!', 'success');
+        }
+
+        function copyTailoredResume() {
+            const resumeText = document.getElementById('tailoredResumeContent').value;
+            navigator.clipboard.writeText(resumeText).then(() => {
+                showNotification('Tailored resume copied to clipboard!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy to clipboard', 'error');
+            });
+        }
+
+        function applyWithTailoredResume() {
+            if (!currentTailoredJob) return;
+            
+            // Add to applications with tailored resume
+            applications.push({
+                id: Date.now(),
+                jobId: currentTailoredJob.id,
+                jobTitle: currentTailoredJob.title,
+                company: currentTailoredJob.company,
+                appliedDate: new Date(),
+                status: 'applied',
+                tailoredResume: document.getElementById('tailoredResumeContent').value,
+                matchScore: currentTailoredResume.matchScore
+            });
+
+            updateStats();
+            closeTailoredResumeModal();
+            showNotification(`Applied to ${currentTailoredJob.title} with tailored resume (${currentTailoredResume.matchScore}% match)!`, 'success');
+        }
+
+        // Enhanced AI Resume Tailoring
+        function simulateAIResumeProcessing(masterResume, job) {
+            // Simulate realistic resume tailoring process
+            const jobKeywords = extractJobKeywords(job);
+            const matchScore = Math.floor(Math.random() * 20) + 80; // 80-99%
+            
+            // Generate tailored resume
+            const tailoredResume = generateTailoredResumeContent(masterResume, job, jobKeywords);
+            
+            // Generate suggestions
+            const suggestions = generateTailoringSuggestions(matchScore, job);
+            
+            return {
+                resume: tailoredResume,
+                matchScore: matchScore,
+                keywords: jobKeywords,
+                suggestions: suggestions
+            };
+        }
+
+        function extractJobKeywords(job) {
+            const keywords = [];
+            
+            // Extract from requirements
+            if (job.requirements) {
+                keywords.push(...job.requirements);
+            }
+            
+            // Extract from description
+            const techKeywords = ['JavaScript', 'React', 'Node.js', 'Python', 'Java', 'AWS', 'Docker', 'Git', 'SQL', 'HTML', 'CSS', 'TypeScript', 'MongoDB', 'Kubernetes', 'Jenkins', 'Agile', 'Scrum'];
+            const descriptionWords = job.description.split(/\s+/);
+            
+            techKeywords.forEach(keyword => {
+                if (job.description.toLowerCase().includes(keyword.toLowerCase())) {
+                    keywords.push(keyword);
+                }
+            });
+            
+            // Remove duplicates and limit to 10
+            return [...new Set(keywords)].slice(0, 10);
+        }
+
+        function generateTailoredResumeContent(masterResume, job, keywords) {
+            let tailoredResume = masterResume;
+            
+            // Add job-specific objective if resume doesn't have one
+            if (!masterResume.toLowerCase().includes('objective') && !masterResume.toLowerCase().includes('summary')) {
+                const objective = `PROFESSIONAL OBJECTIVE
+Experienced ${job.title.toLowerCase()} seeking to leverage expertise in ${keywords.slice(0, 3).join(', ')} to contribute to ${job.company}'s success. Committed to delivering high-quality solutions and driving innovation in ${job.type === 'remote' ? 'distributed' : 'collaborative'} environments.
+
+`;
+                tailoredResume = objective + tailoredResume;
+            }
+            
+            // Add skills section if missing key keywords
+            const missingKeywords = keywords.filter(keyword => 
+                !masterResume.toLowerCase().includes(keyword.toLowerCase())
+            );
+            
+            if (missingKeywords.length > 0) {
+                tailoredResume += `
+
+ADDITIONAL RELEVANT SKILLS
+${missingKeywords.join(' • ')}
+
+POSITION-SPECIFIC STRENGTHS
+• Expertise in ${keywords.slice(0, 2).join(' and ')} as required for ${job.title}
+• Experience with ${job.company} industry standards and best practices
+• Strong background in ${job.type === 'remote' ? 'remote collaboration and communication' : 'on-site team collaboration'}`;
+            }
+            
+            return tailoredResume;
+        }
+
+        function generateTailoringSuggestions(matchScore, job) {
+            const suggestions = [];
+            
+            suggestions.push(`Resume optimized for ${job.title} position at ${job.company}`);
+            
+            if (matchScore < 85) {
+                suggestions.push('Added industry-specific keywords to improve ATS compatibility');
+                suggestions.push('Enhanced technical skills section to match job requirements');
+            }
+            
+            if (matchScore >= 85 && matchScore < 90) {
+                suggestions.push('Strengthened professional summary to align with company goals');
+                suggestions.push('Highlighted relevant experience for this specific role');
+            }
+            
+            if (matchScore >= 90) {
+                suggestions.push('Excellent keyword optimization achieved');
+                suggestions.push('Resume structure perfectly aligned with job requirements');
+            }
+            
+            if (job.type === 'remote') {
+                suggestions.push('Emphasized remote work capabilities and communication skills');
+            }
+            
+            suggestions.push('Added position-specific achievements and competencies');
+            
+            return suggestions;
+        }
         function openCoverLetterModal(jobId) {
             currentJobForCoverLetter = jobDatabase.find(j => j.id === jobId);
             if (!currentJobForCoverLetter) return;
@@ -1245,13 +1617,16 @@ Posted: ${formatDate(job.posted)}`);
             const job = jobDatabase.find(j => j.id === jobId);
             if (!job) return;
 
-            // Simulate AI processing
-            setTimeout(() => {
-                const matchScore = Math.floor(Math.random() * 20) + 80; // 80-99%
-                showNotification(`Resume tailored for ${job.title} - ${matchScore}% match!`, 'success');
-            }, 1000);
-
             showNotification('AI is tailoring your resume...', 'info');
+
+            // Simulate AI processing delay
+            setTimeout(() => {
+                const tailoredData = simulateAIResumeProcessing(resume, job);
+                showNotification(`Resume tailored for ${job.title} - ${tailoredData.matchScore}% match!`, 'success');
+                
+                // Open tailored resume modal
+                openTailoredResumeModal(jobId, tailoredData);
+            }, 2000);
         }
 
         function applyToJob(jobId) {
@@ -1329,9 +1704,14 @@ Your resume is well-optimized for Applicant Tracking Systems!`);
 
         // Close modal when clicking outside
         window.onclick = (event) => {
-            const modal = document.getElementById('coverLetterModal');
-            if (event.target === modal) {
+            const coverLetterModal = document.getElementById('coverLetterModal');
+            const tailoredResumeModal = document.getElementById('tailoredResumeModal');
+            
+            if (event.target === coverLetterModal) {
                 closeCoverLetterModal();
+            }
+            if (event.target === tailoredResumeModal) {
+                closeTailoredResumeModal();
             }
         };
 
