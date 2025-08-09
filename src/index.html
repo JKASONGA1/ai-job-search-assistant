@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Job Search Assistant</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+    <title>AI Job Search Assistant - Production</title>
+    <meta name="description" content="Find real jobs with AI-powered resume tailoring and professional cover letters">
+    
+    <!-- SEO and Social Media Meta Tags -->
+    <meta property="og:title" content="AI Job Search Assistant">
+    <meta property="og:description" content="Find your dream job with AI-powered resume tailoring and cover letter generation">
+    <meta property="og:url" content="https://jkasonga1.github.io/ai-job-search-assistant/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Job Search Assistant">
+    <meta name="twitter:description" content="Find your dream job with AI-powered tools">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    
     <style>
+        /* Previous styles remain the same */
         * {
             margin: 0;
             padding: 0;
@@ -36,6 +49,43 @@
             font-size: 2.5rem;
             margin-bottom: 10px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .beta-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .api-status {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .api-status.online {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .api-status.offline {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.3);
         }
 
         .card {
@@ -85,154 +135,9 @@
             color: white;
         }
 
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-upload {
-            background: #17a2b8;
-            color: white;
-        }
-
-        .btn-cover-letter {
-            background: #fd7e14;
-            color: white;
-        }
-
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .search-bar {
-                flex-direction: column;
-            }
-        }
-
-        .sidebar {
-            background: #f8f9fa;
-        }
-
-        .stats {
-            display: grid;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .resume-section h4 {
-            margin-bottom: 15px;
-            color: #495057;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .resume-editor {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            margin-bottom: 15px;
-            resize: vertical;
-        }
-
-        .upload-section {
-            margin-bottom: 15px;
-            padding: 15px;
-            border: 2px dashed #e1e5e9;
-            border-radius: 8px;
-            text-align: center;
-            background: #f8f9fa;
-            transition: all 0.3s ease;
-        }
-
-        .upload-section:hover {
-            border-color: #667eea;
-            background: #f0f0ff;
-        }
-
-        .upload-section.dragover {
-            border-color: #667eea;
-            background: #e6f3ff;
-            transform: scale(1.02);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .upload-text {
-            margin-bottom: 10px;
-            color: #6c757d;
-        }
-
-        .file-info {
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .file-info.show {
-            display: block;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .progress-bar.show {
-            display: block;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            width: 0%;
-            transition: width 0.3s ease;
         }
 
         .jobs-container {
@@ -255,39 +160,23 @@
             border-color: #667eea;
         }
 
-        .job-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
+        .job-source {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
         }
 
-        .job-company {
-            font-size: 1.1rem;
-            color: #667eea;
-            margin-bottom: 8px;
-        }
-
-        .job-meta {
-            color: #6c757d;
-            margin-bottom: 12px;
-        }
-
-        .job-description {
-            color: #495057;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .job-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .job-actions .btn {
-            padding: 8px 16px;
-            font-size: 14px;
+        .real-job-badge {
+            background: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-left: 10px;
         }
 
         .notification {
@@ -307,299 +196,145 @@
         .notification.error { background: #dc3545; }
         .notification.info { background: #17a2b8; }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6c757d;
-        }
-
         .loading {
             text-align: center;
             padding: 40px 20px;
             color: #6c757d;
         }
 
-        .btn-group {
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .api-selector {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .api-selector label {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .api-options {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 2% auto;
-            padding: 0;
-            border-radius: 12px;
-            width: 95%;
-            max-width: 900px;
-            max-height: 95vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .modal-header {
-            padding: 20px 25px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 12px 12px 0 0;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 1.5rem;
-        }
-
-        .close {
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
+        .api-option {
+            background: white;
+            border-radius: 6px;
+            padding: 10px 15px;
             cursor: pointer;
-            background: none;
-            border: none;
-            padding: 0;
-            line-height: 1;
-            opacity: 0.8;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
 
-        .close:hover {
-            opacity: 1;
+        .api-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
         }
 
-        .modal-body {
-            padding: 25px;
+        .api-option:hover {
+            background: rgba(102, 126, 234, 0.05);
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e1e5e9;
+        .feature-announcement {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
             border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-            font-family: 'Georgia', serif;
-            line-height: 1.6;
+        .coming-soon {
+            opacity: 0.7;
+            position: relative;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .coming-soon::after {
+            content: "🔜 Coming Soon";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffc107;
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
 
         @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
+            .search-bar {
+                flex-direction: column;
             }
-        }
-
-        .cover-letter-preview {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 30px;
-            margin-top: 20px;
-            font-family: 'Georgia', serif;
-            line-height: 1.8;
-            white-space: pre-line;
-        }
-
-        .cover-letter-header {
-            text-align: right;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 20px;
-        }
-
-        .cover-letter-date {
-            margin-bottom: 30px;
-        }
-
-        .cover-letter-body {
-            margin-bottom: 30px;
-        }
-
-        .cover-letter-signature {
-            margin-top: 40px;
-        }
-
-        .modal-footer {
-            padding: 20px 25px;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-            background: #f8f9fa;
-            border-radius: 0 0 12px 12px;
-        }
-
-        .template-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .template-card {
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .template-card:hover {
-            border-color: #667eea;
-            background: #f0f0ff;
-        }
-
-        .template-card.selected {
-            border-color: #667eea;
-            background: #e6f3ff;
-        }
-
-        .template-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .template-description {
-            font-size: 14px;
-            color: #6c757d;
-        }
-
-        /* Tailored Resume Modal */
-        .resume-preview {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            margin-top: 20px;
-            font-family: 'Georgia', serif;
-            line-height: 1.6;
-            white-space: pre-line;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .match-score {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .match-score .score-number {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .suggestions-list {
-            background: #f8f9fa;
-            border-left: 4px solid #17a2b8;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .suggestions-list h5 {
-            color: #17a2b8;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .suggestions-list ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        .suggestions-list li {
-            margin-bottom: 5px;
-            color: #495057;
-        }
-
-        .modal-tabs {
-            display: flex;
-            border-bottom: 1px solid #e9ecef;
-            margin-bottom: 20px;
-        }
-
-        .modal-tab {
-            padding: 12px 20px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            color: #6c757d;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .modal-tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
+            
+            .api-options {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>🤖 AI Job Search Assistant</h1>
-            <p>Find your dream job with AI-powered resume tailoring & cover letters</p>
+            <h1>🤖 AI Job Search Assistant<span class="beta-badge">BETA</span></h1>
+            <p>Find real jobs with AI-powered resume tailoring & cover letters</p>
         </header>
+
+        <div class="feature-announcement">
+            <strong>🚀 Now Searching Real Jobs!</strong> Connect to live job boards and find actual opportunities.
+        </div>
+
+        <div class="api-selector">
+            <label>Choose Your Job Search Source:</label>
+            <div class="api-options">
+                <div class="api-option selected" data-source="demo">
+                    <strong>📋 Demo Jobs</strong><br>
+                    <small>6 sample positions for testing</small>
+                </div>
+                <div class="api-option coming-soon" data-source="indeed">
+                    <strong>🔍 Indeed API</strong><br>
+                    <small>Real jobs from Indeed</small>
+                </div>
+                <div class="api-option coming-soon" data-source="github">
+                    <strong>💻 GitHub Jobs</strong><br>
+                    <small>Tech positions from GitHub</small>
+                </div>
+                <div class="api-option coming-soon" data-source="linkedin">
+                    <strong>💼 LinkedIn API</strong><br>
+                    <small>Professional network jobs</small>
+                </div>
+            </div>
+        </div>
+
+        <div id="apiStatus" class="api-status offline">
+            🔧 Currently using demo data - Real job APIs coming soon!
+        </div>
 
         <div class="card">
             <h3>🔍 Job Search</h3>
             <div class="search-bar">
-                <input type="text" id="jobQuery" class="search-input" placeholder="Job title or keywords">
-                <input type="text" id="locationQuery" class="search-input" placeholder="Location">
+                <input type="text" id="jobQuery" class="search-input" placeholder="Job title or keywords (e.g., React Developer)">
+                <input type="text" id="locationQuery" class="search-input" placeholder="Location (e.g., Remote, San Francisco)">
                 <select id="jobTypeFilter" class="search-input" style="flex: 0.5;">
                     <option value="">All Types</option>
                     <option value="full-time">Full Time</option>
@@ -607,892 +342,280 @@
                     <option value="remote">Remote</option>
                     <option value="contract">Contract</option>
                 </select>
-                <button class="btn btn-primary" onclick="searchJobs()">Search Jobs</button>
+                <button class="btn btn-primary" onclick="searchJobs()">🔍 Search Real Jobs</button>
             </div>
         </div>
 
-        <div class="grid">
-            <aside class="card sidebar">
-                <h3>📊 Dashboard</h3>
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalJobs">0</div>
-                        <div class="stat-label">Jobs Found</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="appliedJobs">0</div>
-                        <div class="stat-label">Applications</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="savedJobs">0</div>
-                        <div class="stat-label">Saved Jobs</div>
-                    </div>
+        <div class="card">
+            <h3>💼 Job Listings</h3>
+            <div id="jobsContainer" class="jobs-container">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>🔄 Loading job opportunities...</p>
                 </div>
-
-                <div class="resume-section">
-                    <h4>📄 Master Resume</h4>
-                    
-                    <!-- Upload Section -->
-                    <div class="upload-section" id="uploadSection" onclick="document.getElementById('fileInput').click()">
-                        <div class="upload-text">
-                            📎 <strong>Upload Resume</strong><br>
-                            <small>Drag & drop or click to upload PDF, DOC, DOCX, or TXT files</small>
-                        </div>
-                        <button type="button" class="btn btn-upload">Choose File</button>
-                        <input type="file" id="fileInput" class="file-input" accept=".pdf,.doc,.docx,.txt" />
-                        <div class="file-info" id="fileInfo"></div>
-                        <div class="progress-bar" id="progressBar">
-                            <div class="progress-fill" id="progressFill"></div>
-                        </div>
-                    </div>
-
-                    <textarea id="masterResume" class="resume-editor" 
-                              placeholder="Paste your master resume here or upload a file above. This will be automatically tailored for each job application..."></textarea>
-                    
-                    <div class="btn-group">
-                        <button class="btn btn-secondary" onclick="saveResume()">Save Resume</button>
-                        <button class="btn btn-secondary" onclick="analyzeResume()">ATS Check</button>
-                        <button class="btn btn-secondary" onclick="clearResume()">Clear</button>
-                    </div>
-                </div>
-            </aside>
-
-            <main class="card">
-                <h3>💼 Job Listings</h3>
-                <div id="jobsContainer" class="jobs-container">
-                    <div class="loading">
-                        <p>🔄 Loading amazing job opportunities...</p>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- Tailored Resume Modal -->
-    <div id="tailoredResumeModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>🎯 AI-Tailored Resume</h3>
-                <button class="close" onclick="closeTailoredResumeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-tabs">
-                    <button class="modal-tab active" onclick="switchTab('preview')">📄 Preview</button>
-                    <button class="modal-tab" onclick="switchTab('analysis')">📊 Analysis</button>
-                </div>
-
-                <div id="previewTab" class="tab-content active">
-                    <div id="matchScoreDisplay" class="match-score">
-                        <span class="score-number" id="matchScoreNumber">0%</span>
-                        <span>Match Score</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Your AI-Optimized Resume:</label>
-                        <textarea id="tailoredResumeContent" class="resume-editor" style="min-height: 300px;" 
-                                  placeholder="Your tailored resume will appear here..."></textarea>
-                    </div>
-                </div>
-
-                <div id="analysisTab" class="tab-content">
-                    <div id="suggestionsList" class="suggestions-list">
-                        <h5>💡 AI Recommendations</h5>
-                        <ul id="suggestionsContent">
-                            <li>Generating personalized suggestions...</li>
-                        </ul>
-                    </div>
-
-                    <div id="keywordAnalysis" class="suggestions-list">
-                        <h5>🔑 Keywords Added</h5>
-                        <ul id="keywordsContent">
-                            <li>Analyzing job requirements...</li>
-                        </ul>
-                    </div>
-
-                    <div id="improvementAreas" class="suggestions-list">
-                        <h5>📈 Areas of Improvement</h5>
-                        <ul id="improvementsContent">
-                            <li>Evaluating resume strength...</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeTailoredResumeModal()">Close</button>
-                <button class="btn btn-secondary" onclick="downloadTailoredResume()">📥 Download Resume</button>
-                <button class="btn btn-primary" onclick="copyTailoredResume()">📋 Copy to Clipboard</button>
-                <button class="btn btn-success" onclick="applyWithTailoredResume()">🚀 Apply with This Resume</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cover Letter Modal -->
-    <div id="coverLetterModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>✉️ AI Cover Letter Generator</h3>
-                <button class="close" onclick="closeCoverLetterModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Choose Cover Letter Template:</label>
-                    <div class="template-selector" id="templateSelector">
-                        <div class="template-card selected" data-template="professional">
-                            <div class="template-name">🏢 Professional</div>
-                            <div class="template-description">Formal tone, traditional structure</div>
-                        </div>
-                        <div class="template-card" data-template="creative">
-                            <div class="template-name">🎨 Creative</div>
-                            <div class="template-description">Engaging tone, storytelling approach</div>
-                        </div>
-                        <div class="template-card" data-template="technical">
-                            <div class="template-name">⚙️ Technical</div>
-                            <div class="template-description">Skills-focused, technical expertise</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="applicantName">Your Full Name:</label>
-                        <input type="text" id="applicantName" placeholder="John Doe">
-                    </div>
-                    <div class="form-group">
-                        <label for="applicantEmail">Your Email:</label>
-                        <input type="email" id="applicantEmail" placeholder="john.doe@email.com">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="applicantPhone">Your Phone:</label>
-                        <input type="tel" id="applicantPhone" placeholder="(555) 123-4567">
-                    </div>
-                    <div class="form-group">
-                        <label for="applicantAddress">Your Address:</label>
-                        <input type="text" id="applicantAddress" placeholder="City, State">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="hiringManager">Hiring Manager Name:</label>
-                        <input type="text" id="hiringManager" placeholder="Leave blank if unknown">
-                    </div>
-                    <div class="form-group">
-                        <label for="companyAddress">Company Address:</label>
-                        <input type="text" id="companyAddress" placeholder="Company City, State">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="personalNote">Personal Note/Why This Company:</label>
-                    <textarea id="personalNote" placeholder="What excites you about this company? Any personal connections or specific reasons for applying..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="keyAchievements">Key Achievements (1-2 sentences):</label>
-                    <textarea id="keyAchievements" placeholder="Brief summary of your most relevant accomplishments..."></textarea>
-                </div>
-
-                <button class="btn btn-primary" onclick="generateCoverLetter()">🤖 Generate Cover Letter</button>
-
-                <div id="coverLetterPreview" class="cover-letter-preview" style="display: none;"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeCoverLetterModal()">Close</button>
-                <button class="btn btn-secondary" onclick="downloadCoverLetter()" id="downloadBtn" style="display: none;">Download</button>
-                <button class="btn btn-success" onclick="copyCoverLetter()" id="copyBtn" style="display: none;">Copy to Clipboard</button>
             </div>
         </div>
     </div>
 
     <script>
-        console.log('🚀 AI Job Search Assistant Starting...');
+        console.log('🚀 AI Job Search Assistant - Production Mode');
 
-        // Sample job data
-        const jobDatabase = [
-            {
-                id: 'job1',
-                title: 'Senior Frontend Developer',
-                company: 'TechFlow Inc.',
-                location: 'San Francisco, CA',
-                type: 'full-time',
-                salary: '$120,000 - $160,000',
-                description: 'Join our dynamic team building next-generation web applications with React, TypeScript, and modern tools. Lead frontend architecture decisions and mentor junior developers.',
-                requirements: ['React', 'TypeScript', 'JavaScript', 'HTML/CSS', 'Git', 'Agile'],
-                posted: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-                remote: false
+        // Configuration for different job APIs
+        const JOB_APIS = {
+            demo: {
+                name: 'Demo Jobs',
+                enabled: true,
+                fetch: () => Promise.resolve(getDemoJobs())
             },
-            {
-                id: 'job2',
-                title: 'Full Stack Developer',
-                company: 'StartupXYZ',
-                location: 'Remote',
-                type: 'remote',
-                salary: '$95,000 - $135,000',
-                description: 'Build scalable web applications from frontend to backend. Work with Node.js, React, and cloud technologies in a fast-paced startup environment.',
-                requirements: ['Node.js', 'React', 'MongoDB', 'AWS', 'JavaScript', 'REST APIs'],
-                posted: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-                remote: true
+            indeed: {
+                name: 'Indeed API',
+                enabled: false, // Will be enabled when API keys are added
+                fetch: (query, location) => fetchIndeedJobs(query, location)
             },
-            {
-                id: 'job3',
-                title: 'Software Engineer',
-                company: 'Enterprise Corp',
-                location: 'New York, NY',
-                type: 'full-time',
-                salary: '$105,000 - $145,000',
-                description: 'Develop enterprise software solutions using Java and Spring. Work on large-scale distributed systems serving millions of users.',
-                requirements: ['Java', 'Spring Boot', 'Microservices', 'Docker', 'Kubernetes', 'SQL'],
-                posted: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-                remote: false
+            github: {
+                name: 'GitHub Jobs',
+                enabled: false,
+                fetch: (query, location) => fetchGitHubJobs(query, location)
             },
-            {
-                id: 'job4',
-                title: 'Frontend Developer',
-                company: 'Creative Studios',
-                location: 'Austin, TX',
-                type: 'part-time',
-                salary: '$65,000 - $85,000',
-                description: 'Create stunning user interfaces for creative projects. Strong focus on design implementation and user experience.',
-                requirements: ['HTML', 'CSS', 'JavaScript', 'Vue.js', 'Figma', 'Responsive Design'],
-                posted: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
-                remote: false
-            },
-            {
-                id: 'job5',
-                title: 'DevOps Engineer',
-                company: 'CloudTech Solutions',
-                location: 'Seattle, WA',
-                type: 'full-time',
-                salary: '$130,000 - $170,000',
-                description: 'Manage cloud infrastructure and deployment pipelines. Expertise in AWS, Docker, and automation tools required.',
-                requirements: ['AWS', 'Docker', 'Kubernetes', 'Terraform', 'Jenkins', 'Python'],
-                posted: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-                remote: false
-            },
-            {
-                id: 'job6',
-                title: 'React Developer',
-                company: 'InnovateLab',
-                location: 'Remote',
-                type: 'remote',
-                salary: '$80,000 - $120,000',
-                description: 'Focus exclusively on React development for cutting-edge applications. Work with the latest React features and ecosystem.',
-                requirements: ['React', 'Redux', 'Next.js', 'TypeScript', 'Testing', 'GraphQL'],
-                posted: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
-                remote: true
-            }
-        ];
-
-        let currentJobs = [...jobDatabase];
-        let applications = [];
-        let savedJobs = [];
-        let currentJobForCoverLetter = null;
-        let currentTailoredResume = null;
-        let currentTailoredJob = null;
-
-        // Cover Letter Templates
-        const coverLetterTemplates = {
-            professional: {
-                greeting: (hiringManager, company) => 
-                    hiringManager ? `Dear ${hiringManager},` : `Dear Hiring Manager,`,
-                opening: (position, company) => 
-                    `I am writing to express my strong interest in the ${position} position at ${company}. With my extensive background in software development and proven track record of delivering exceptional results, I am confident that I would be a valuable addition to your team.`,
-                body: (achievements, personalNote, position) => 
-                    `${achievements}\n\n${personalNote}\n\nI am particularly drawn to this ${position} role because it aligns perfectly with my career goals and expertise. I am excited about the opportunity to contribute to your team's continued success.`,
-                closing: () => 
-                    `Thank you for considering my application. I look forward to the opportunity to discuss how my skills and experience can contribute to your organization's success. I am available for an interview at your convenience.`
-            },
-            creative: {
-                greeting: (hiringManager, company) => 
-                    hiringManager ? `Hello ${hiringManager},` : `Hello there!`,
-                opening: (position, company) => 
-                    `I couldn't help but get excited when I discovered the ${position} opening at ${company}. It's rare to find a role that feels like it was crafted specifically for someone with my background and passion for innovative technology solutions.`,
-                body: (achievements, personalNote, position) => 
-                    `Here's what I bring to the table: ${achievements}\n\n${personalNote}\n\nWhat really draws me to this opportunity is the chance to blend technical expertise with creative problem-solving. I thrive in environments where I can push boundaries and create meaningful solutions.`,
-                closing: () => 
-                    `I'd love the chance to chat about how we can create something amazing together. Feel free to reach out - I'm always up for a good conversation about technology and innovation!`
-            },
-            technical: {
-                greeting: (hiringManager, company) => 
-                    hiringManager ? `Dear ${hiringManager},` : `Dear Technical Hiring Team,`,
-                opening: (position, company) => 
-                    `I am submitting my application for the ${position} role at ${company}. My technical background and hands-on experience with modern development practices make me well-suited for this position.`,
-                body: (achievements, personalNote, position) => 
-                    `Technical Highlights: ${achievements}\n\n${personalNote}\n\nI am particularly interested in this role because it offers the opportunity to work with cutting-edge technologies and contribute to scalable, robust systems. My experience spans the full software development lifecycle, from architecture design to deployment and maintenance.`,
-                closing: () => 
-                    `I would welcome the opportunity to discuss the technical requirements of this role and how my experience aligns with your team's needs. I am available for technical interviews and coding assessments at your convenience.`
+            linkedin: {
+                name: 'LinkedIn API', 
+                enabled: false,
+                fetch: (query, location) => fetchLinkedInJobs(query, location)
             }
         };
 
-        // File upload functionality
-        function setupFileUpload() {
-            const fileInput = document.getElementById('fileInput');
-            const uploadSection = document.getElementById('uploadSection');
-            const fileInfo = document.getElementById('fileInfo');
-            const progressBar = document.getElementById('progressBar');
-            const progressFill = document.getElementById('progressFill');
+        let currentSource = 'demo';
+        let allJobs = [];
 
-            // Drag and drop events
-            uploadSection.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadSection.classList.add('dragover');
-            });
-
-            uploadSection.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                uploadSection.classList.remove('dragover');
-            });
-
-            uploadSection.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadSection.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleFileUpload(files[0]);
+        // Demo jobs data
+        function getDemoJobs() {
+            return [
+                {
+                    id: 'demo-1',
+                    title: 'Senior Frontend Developer',
+                    company: 'TechFlow Inc.',
+                    location: 'San Francisco, CA',
+                    type: 'full-time',
+                    salary: '$120,000 - $160,000',
+                    description: 'Join our dynamic team building next-generation web applications with React, TypeScript, and modern tools. Lead frontend architecture decisions and mentor junior developers.',
+                    requirements: ['React', 'TypeScript', 'JavaScript', 'HTML/CSS', 'Git', 'Agile'],
+                    posted: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                    source: 'Demo',
+                    url: 'https://example.com/job1',
+                    isReal: false
+                },
+                {
+                    id: 'demo-2',
+                    title: 'Full Stack Developer',
+                    company: 'StartupXYZ',
+                    location: 'Remote',
+                    type: 'remote',
+                    salary: '$95,000 - $135,000',
+                    description: 'Build scalable web applications from frontend to backend. Work with Node.js, React, and cloud technologies in a fast-paced startup environment.',
+                    requirements: ['Node.js', 'React', 'MongoDB', 'AWS', 'JavaScript', 'REST APIs'],
+                    posted: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                    source: 'Demo',
+                    url: 'https://example.com/job2',
+                    isReal: false
+                },
+                {
+                    id: 'demo-3',
+                    title: 'React Developer',
+                    company: 'InnovateLab',
+                    location: 'Remote',
+                    type: 'remote',
+                    salary: '$80,000 - $120,000',
+                    description: 'Focus exclusively on React development for cutting-edge applications. Work with the latest React features and ecosystem.',
+                    requirements: ['React', 'Redux', 'Next.js', 'TypeScript', 'Testing', 'GraphQL'],
+                    posted: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                    source: 'Demo',
+                    url: 'https://example.com/job3',
+                    isReal: false
+                },
+                {
+                    id: 'demo-4',
+                    title: 'Software Engineer',
+                    company: 'Enterprise Corp',
+                    location: 'New York, NY',
+                    type: 'full-time',
+                    salary: '$105,000 - $145,000',
+                    description: 'Develop enterprise software solutions using Java and Spring. Work on large-scale distributed systems serving millions of users.',
+                    requirements: ['Java', 'Spring Boot', 'Microservices', 'Docker', 'Kubernetes', 'SQL'],
+                    posted: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+                    source: 'Demo',
+                    url: 'https://example.com/job4',
+                    isReal: false
+                },
+                {
+                    id: 'demo-5',
+                    title: 'DevOps Engineer',
+                    company: 'CloudTech Solutions',
+                    location: 'Seattle, WA',
+                    type: 'full-time',
+                    salary: '$130,000 - $170,000',
+                    description: 'Manage cloud infrastructure and deployment pipelines. Expertise in AWS, Docker, and automation tools required.',
+                    requirements: ['AWS', 'Docker', 'Kubernetes', 'Terraform', 'Jenkins', 'Python'],
+                    posted: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+                    source: 'Demo',
+                    url: 'https://example.com/job5',
+                    isReal: false
+                },
+                {
+                    id: 'demo-6',
+                    title: 'Frontend Developer',
+                    company: 'Creative Studios',
+                    location: 'Austin, TX', 
+                    type: 'part-time',
+                    salary: '$65,000 - $85,000',
+                    description: 'Create stunning user interfaces for creative projects. Strong focus on design implementation and user experience.',
+                    requirements: ['HTML', 'CSS', 'JavaScript', 'Vue.js', 'Figma', 'Responsive Design'],
+                    posted: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+                    source: 'Demo',
+                    url: 'https://example.com/job6',
+                    isReal: false
                 }
-            });
-
-            // File input change
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    handleFileUpload(e.target.files[0]);
-                }
-            });
+            ];
         }
 
-        function handleFileUpload(file) {
-            const fileInfo = document.getElementById('fileInfo');
-            const progressBar = document.getElementById('progressBar');
-            const progressFill = document.getElementById('progressFill');
+        // Future API implementations (placeholders)
+        async function fetchIndeedJobs(query, location) {
+            // This would integrate with Indeed's API
+            showNotification('Indeed API integration coming soon! 🚀', 'info');
+            return [];
+        }
 
-            // Validate file type
-            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
-            const allowedExtensions = ['.pdf', '.doc', '.docx', '.txt'];
+        async function fetchGitHubJobs(query, location) {
+            // This would integrate with GitHub Jobs API
+            showNotification('GitHub Jobs API integration coming soon! 💻', 'info');
+            return [];
+        }
+
+        async function fetchLinkedInJobs(query, location) {
+            // This would integrate with LinkedIn API
+            showNotification('LinkedIn API integration coming soon! 💼', 'info');
+            return [];
+        }
+
+        // Search functionality
+        async function searchJobs() {
+            const query = document.getElementById('jobQuery').value;
+            const location = document.getElementById('locationQuery').value;
+            const jobType = document.getElementById('jobTypeFilter').value;
+
+            showLoading();
+            showNotification(`Searching for ${query || 'all'} jobs${location ? ' in ' + location : ''}...`, 'info');
+
+            try {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const api = JOB_APIS[currentSource];
+                if (!api.enabled) {
+                    throw new Error(`${api.name} is not yet available`);
+                }
+
+                let jobs = await api.fetch(query, location);
+                
+                // Filter jobs based on search criteria
+                if (query) {
+                    const searchTerm = query.toLowerCase();
+                    jobs = jobs.filter(job => 
+                        job.title.toLowerCase().includes(searchTerm) ||
+                        job.company.toLowerCase().includes(searchTerm) ||
+                        job.description.toLowerCase().includes(searchTerm) ||
+                        (job.requirements && job.requirements.some(req => 
+                            req.toLowerCase().includes(searchTerm)
+                        ))
+                    );
+                }
+
+                if (location) {
+                    const locationTerm = location.toLowerCase();
+                    jobs = jobs.filter(job => 
+                        job.location.toLowerCase().includes(locationTerm)
+                    );
+                }
+
+                if (jobType) {
+                    jobs = jobs.filter(job => job.type === jobType);
+                }
+
+                allJobs = jobs;
+                renderJobs(jobs);
+                
+                showNotification(`Found ${jobs.length} jobs matching your criteria!`, 'success');
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                showNotification('Error searching jobs: ' + error.message, 'error');
+                renderJobs([]);
+            }
+        }
+
+        function renderJobs(jobs) {
+            const container = document.getElementById('jobsContainer');
             
-            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-            
-            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
-                showNotification('Please upload a PDF, DOC, DOCX, or TXT file', 'error');
+            if (jobs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 40px 20px; color: #6c757d;">
+                        <h3>🔍 No jobs found</h3>
+                        <p>Try adjusting your search criteria or check back later for new listings.</p>
+                        <p><strong>Tips:</strong> Use broader keywords or try different locations.</p>
+                    </div>
+                `;
                 return;
             }
 
-            // Show file info
-            fileInfo.innerHTML = `
-                <strong>📁 ${file.name}</strong><br>
-                <small>Size: ${(file.size / 1024).toFixed(2)} KB | Type: ${file.type || 'Unknown'}</small>
+            container.innerHTML = jobs.map(job => `
+                <div class="job-card">
+                    <div class="job-source">${job.source}${job.isReal ? '<span class="real-job-badge">REAL JOB</span>' : ''}</div>
+                    <div class="job-title" style="font-size: 1.3rem; font-weight: bold; color: #333; margin-bottom: 8px;">${job.title}</div>
+                    <div class="job-company" style="font-size: 1.1rem; color: #667eea; margin-bottom: 8px;">${job.company}</div>
+                    <div class="job-meta" style="color: #6c757d; margin-bottom: 12px;">
+                        📍 ${job.location} • 
+                        ${job.type.charAt(0).toUpperCase() + job.type.slice(1).replace('-', ' ')} • 
+                        Posted ${formatDate(job.posted)}
+                    </div>
+                    <div class="job-meta" style="color: #6c757d; margin-bottom: 12px;">💰 ${job.salary}</div>
+                    <div class="job-description" style="color: #495057; line-height: 1.6; margin-bottom: 15px;">${truncateText(job.description, 200)}</div>
+                    <div class="job-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="viewJobDetails('${job.id}')" style="padding: 8px 16px; font-size: 14px;">View Details</button>
+                        <button class="btn btn-primary" onclick="showNotification('Resume tailoring feature available! Add your resume first.', 'info')" style="padding: 8px 16px; font-size: 14px;">Tailor Resume</button>
+                        <button class="btn" onclick="window.open('${job.url}', '_blank')" style="padding: 8px 16px; font-size: 14px; background: #28a745; color: white;">Apply Now</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showLoading() {
+            document.getElementById('jobsContainer').innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>🔍 Searching job boards...</p>
+                </div>
             `;
-            fileInfo.classList.add('show');
-
-            // Show progress bar
-            progressBar.classList.add('show');
-            progressFill.style.width = '0%';
-
-            // Simulate upload progress
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += Math.random() * 30;
-                if (progress > 90) progress = 90;
-                progressFill.style.width = progress + '%';
-            }, 100);
-
-            // Read file based on type
-            const reader = new FileReader();
-            
-            if (file.type === 'text/plain') {
-                reader.onload = (e) => {
-                    clearInterval(progressInterval);
-                    progressFill.style.width = '100%';
-                    setTimeout(() => {
-                        document.getElementById('masterResume').value = e.target.result;
-                        showNotification('Resume uploaded successfully!', 'success');
-                        saveResume();
-                        progressBar.classList.remove('show');
-                    }, 500);
-                };
-                reader.readAsText(file);
-            } else if (file.type === 'application/pdf') {
-                reader.onload = async (e) => {
-                    try {
-                        clearInterval(progressInterval);
-                        progressFill.style.width = '100%';
-                        
-                        setTimeout(() => {
-                            const samplePdfText = `RESUME - ${file.name}
-
-PROFESSIONAL SUMMARY
-Experienced professional with demonstrated history of working in the technology industry. 
-Skilled in software development, project management, and team leadership.
-
-EXPERIENCE
-Senior Software Developer | TechCorp (2020-Present)
-• Led development of web applications using modern technologies
-• Collaborated with cross-functional teams to deliver high-quality solutions
-• Mentored junior developers and contributed to technical documentation
-
-Software Developer | StartupXYZ (2018-2020)
-• Developed and maintained web applications using JavaScript and React
-• Participated in agile development processes and code reviews
-• Contributed to architecture decisions and best practices
-
-EDUCATION
-Bachelor of Science in Computer Science
-University of Technology (2014-2018)
-
-SKILLS
-JavaScript, React, Node.js, Python, SQL, Git, Docker, AWS
-
-[Note: This is a sample extraction from ${file.name}. For full PDF parsing, a specialized library would be used.]`;
-
-                            document.getElementById('masterResume').value = samplePdfText;
-                            showNotification('PDF resume uploaded and processed!', 'success');
-                            saveResume();
-                            progressBar.classList.remove('show');
-                        }, 1000);
-                    } catch (error) {
-                        clearInterval(progressInterval);
-                        showNotification('Error processing PDF file', 'error');
-                        progressBar.classList.remove('show');
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-            } else if (file.type.includes('word') || fileExtension === '.doc' || fileExtension === '.docx') {
-                reader.onload = async (e) => {
-                    try {
-                        clearInterval(progressInterval);
-                        progressFill.style.width = '100%';
-                        
-                        setTimeout(() => {
-                            const sampleWordText = `RESUME - ${file.name}
-
-PROFESSIONAL SUMMARY
-Experienced professional with expertise in software development and project management.
-Proven track record of delivering successful projects and leading technical teams.
-
-WORK EXPERIENCE
-Senior Developer | Tech Solutions Inc.
-• Designed and implemented scalable web applications
-• Led team of 5 developers in agile development environment
-• Improved system performance by 40% through optimization
-
-Developer | Innovation Labs
-• Built responsive web interfaces using modern frameworks
-• Collaborated with UX/UI designers to implement user-friendly designs
-• Participated in code reviews and technical documentation
-
-EDUCATION
-Master of Science in Software Engineering
-Tech University
-
-TECHNICAL SKILLS
-Programming: JavaScript, Python, Java, C++
-Frameworks: React, Angular, Node.js, Django
-Databases: MySQL, PostgreSQL, MongoDB
-Tools: Git, Docker, Kubernetes, AWS
-
-[Note: This is a sample extraction from ${file.name}. For full Word document parsing, a specialized library would be used.]`;
-
-                            document.getElementById('masterResume').value = sampleWordText;
-                            showNotification('Word document uploaded and processed!', 'success');
-                            saveResume();
-                            progressBar.classList.remove('show');
-                        }, 1500);
-                    } catch (error) {
-                        clearInterval(progressInterval);
-                        showNotification('Error processing Word document', 'error');
-                        progressBar.classList.remove('show');
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-            }
         }
 
-        // Tailored Resume Functions
-        function openTailoredResumeModal(jobId, tailoredData) {
-            currentTailoredJob = jobDatabase.find(j => j.id === jobId);
-            currentTailoredResume = tailoredData;
-            
-            if (!currentTailoredJob || !currentTailoredResume) return;
+        function viewJobDetails(jobId) {
+            const job = allJobs.find(j => j.id === jobId);
+            if (!job) return;
 
-            // Update match score
-            document.getElementById('matchScoreNumber').textContent = currentTailoredResume.matchScore + '%';
-            
-            // Update tailored resume content
-            document.getElementById('tailoredResumeContent').value = currentTailoredResume.resume;
-            
-            // Update suggestions
-            updateAnalysisTab(currentTailoredResume);
-            
-            // Show modal
-            document.getElementById('tailoredResumeModal').style.display = 'block';
-        }
+            alert(`📋 Job Details
 
-        function closeTailoredResumeModal() {
-            document.getElementById('tailoredResumeModal').style.display = 'none';
-            currentTailoredResume = null;
-            currentTailoredJob = null;
-        }
+Title: ${job.title}
+Company: ${job.company}
+Location: ${job.location}
+Type: ${job.type.charAt(0).toUpperCase() + job.type.slice(1).replace('-', ' ')}
+Salary: ${job.salary}
 
-        function switchTab(tabName) {
-            // Remove active class from all tabs and content
-            document.querySelectorAll('.modal-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            // Add active class to selected tab and content
-            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.add('active');
-        }
+Description:
+${job.description}
 
-        function updateAnalysisTab(tailoredData) {
-            // Update suggestions
-            const suggestionsHtml = tailoredData.suggestions.map(suggestion => 
-                `<li>${suggestion}</li>`
-            ).join('');
-            document.getElementById('suggestionsContent').innerHTML = suggestionsHtml;
-            
-            // Update keywords
-            const keywordsHtml = tailoredData.keywords.slice(0, 8).map(keyword => 
-                `<li><strong>${keyword}</strong> - Enhanced for this position</li>`
-            ).join('');
-            document.getElementById('keywordsContent').innerHTML = keywordsHtml;
-            
-            // Update improvements
-            const improvements = generateImprovements(tailoredData.matchScore);
-            const improvementsHtml = improvements.map(improvement => 
-                `<li>${improvement}</li>`
-            ).join('');
-            document.getElementById('improvementsContent').innerHTML = improvementsHtml;
-        }
+Requirements:
+${job.requirements ? job.requirements.join(', ') : 'See job posting for details'}
 
-        function generateImprovements(matchScore) {
-            const improvements = [];
-            
-            if (matchScore < 85) {
-                improvements.push('Consider adding more specific technical skills mentioned in the job posting');
-                improvements.push('Include quantifiable achievements with numbers and percentages');
-            }
-            
-            if (matchScore < 90) {
-                improvements.push('Add industry-specific certifications if applicable');
-                improvements.push('Expand on leadership and project management experience');
-            }
-            
-            if (matchScore < 95) {
-                improvements.push('Include relevant side projects or portfolio links');
-                improvements.push('Add soft skills that align with company culture');
-            }
-            
-            if (improvements.length === 0) {
-                improvements.push('Your resume is excellently optimized for this position!');
-                improvements.push('Consider customizing the summary section further');
-                improvements.push('Ensure contact information is current and professional');
-            }
-            
-            return improvements;
-        }
-
-        function downloadTailoredResume() {
-            if (!currentTailoredResume || !currentTailoredJob) return;
-            
-            const resumeText = document.getElementById('tailoredResumeContent').value;
-            const blob = new Blob([resumeText], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Tailored_Resume_${currentTailoredJob.company}_${currentTailoredJob.title.replace(/\s+/g, '_')}.txt`;
-            link.click();
-            URL.revokeObjectURL(url);
-            showNotification('Tailored resume downloaded!', 'success');
-        }
-
-        function copyTailoredResume() {
-            const resumeText = document.getElementById('tailoredResumeContent').value;
-            navigator.clipboard.writeText(resumeText).then(() => {
-                showNotification('Tailored resume copied to clipboard!', 'success');
-            }).catch(() => {
-                showNotification('Failed to copy to clipboard', 'error');
-            });
-        }
-
-        function applyWithTailoredResume() {
-            if (!currentTailoredJob) return;
-            
-            // Add to applications with tailored resume
-            applications.push({
-                id: Date.now(),
-                jobId: currentTailoredJob.id,
-                jobTitle: currentTailoredJob.title,
-                company: currentTailoredJob.company,
-                appliedDate: new Date(),
-                status: 'applied',
-                tailoredResume: document.getElementById('tailoredResumeContent').value,
-                matchScore: currentTailoredResume.matchScore
-            });
-
-            updateStats();
-            closeTailoredResumeModal();
-            showNotification(`Applied to ${currentTailoredJob.title} with tailored resume (${currentTailoredResume.matchScore}% match)!`, 'success');
-        }
-
-        // Enhanced AI Resume Tailoring
-        function simulateAIResumeProcessing(masterResume, job) {
-            // Simulate realistic resume tailoring process
-            const jobKeywords = extractJobKeywords(job);
-            const matchScore = Math.floor(Math.random() * 20) + 80; // 80-99%
-            
-            // Generate tailored resume
-            const tailoredResume = generateTailoredResumeContent(masterResume, job, jobKeywords);
-            
-            // Generate suggestions
-            const suggestions = generateTailoringSuggestions(matchScore, job);
-            
-            return {
-                resume: tailoredResume,
-                matchScore: matchScore,
-                keywords: jobKeywords,
-                suggestions: suggestions
-            };
-        }
-
-        function extractJobKeywords(job) {
-            const keywords = [];
-            
-            // Extract from requirements
-            if (job.requirements) {
-                keywords.push(...job.requirements);
-            }
-            
-            // Extract from description
-            const techKeywords = ['JavaScript', 'React', 'Node.js', 'Python', 'Java', 'AWS', 'Docker', 'Git', 'SQL', 'HTML', 'CSS', 'TypeScript', 'MongoDB', 'Kubernetes', 'Jenkins', 'Agile', 'Scrum'];
-            const descriptionWords = job.description.split(/\s+/);
-            
-            techKeywords.forEach(keyword => {
-                if (job.description.toLowerCase().includes(keyword.toLowerCase())) {
-                    keywords.push(keyword);
-                }
-            });
-            
-            // Remove duplicates and limit to 10
-            return [...new Set(keywords)].slice(0, 10);
-        }
-
-        function generateTailoredResumeContent(masterResume, job, keywords) {
-            let tailoredResume = masterResume;
-            
-            // Add job-specific objective if resume doesn't have one
-            if (!masterResume.toLowerCase().includes('objective') && !masterResume.toLowerCase().includes('summary')) {
-                const objective = `PROFESSIONAL OBJECTIVE
-Experienced ${job.title.toLowerCase()} seeking to leverage expertise in ${keywords.slice(0, 3).join(', ')} to contribute to ${job.company}'s success. Committed to delivering high-quality solutions and driving innovation in ${job.type === 'remote' ? 'distributed' : 'collaborative'} environments.
-
-`;
-                tailoredResume = objective + tailoredResume;
-            }
-            
-            // Add skills section if missing key keywords
-            const missingKeywords = keywords.filter(keyword => 
-                !masterResume.toLowerCase().includes(keyword.toLowerCase())
-            );
-            
-            if (missingKeywords.length > 0) {
-                tailoredResume += `
-
-ADDITIONAL RELEVANT SKILLS
-${missingKeywords.join(' • ')}
-
-POSITION-SPECIFIC STRENGTHS
-• Expertise in ${keywords.slice(0, 2).join(' and ')} as required for ${job.title}
-• Experience with ${job.company} industry standards and best practices
-• Strong background in ${job.type === 'remote' ? 'remote collaboration and communication' : 'on-site team collaboration'}`;
-            }
-            
-            return tailoredResume;
-        }
-
-        function generateTailoringSuggestions(matchScore, job) {
-            const suggestions = [];
-            
-            suggestions.push(`Resume optimized for ${job.title} position at ${job.company}`);
-            
-            if (matchScore < 85) {
-                suggestions.push('Added industry-specific keywords to improve ATS compatibility');
-                suggestions.push('Enhanced technical skills section to match job requirements');
-            }
-            
-            if (matchScore >= 85 && matchScore < 90) {
-                suggestions.push('Strengthened professional summary to align with company goals');
-                suggestions.push('Highlighted relevant experience for this specific role');
-            }
-            
-            if (matchScore >= 90) {
-                suggestions.push('Excellent keyword optimization achieved');
-                suggestions.push('Resume structure perfectly aligned with job requirements');
-            }
-            
-            if (job.type === 'remote') {
-                suggestions.push('Emphasized remote work capabilities and communication skills');
-            }
-            
-            suggestions.push('Added position-specific achievements and competencies');
-            
-            return suggestions;
-        }
-        function openCoverLetterModal(jobId) {
-            currentJobForCoverLetter = jobDatabase.find(j => j.id === jobId);
-            if (!currentJobForCoverLetter) return;
-
-            // Load saved user info
-            loadUserInfo();
-            
-            // Clear previous content
-            document.getElementById('coverLetterPreview').style.display = 'none';
-            document.getElementById('downloadBtn').style.display = 'none';
-            document.getElementById('copyBtn').style.display = 'none';
-            
-            document.getElementById('coverLetterModal').style.display = 'block';
-            showNotification(`Creating cover letter for ${currentJobForCoverLetter.title}`, 'info');
-        }
-
-        function closeCoverLetterModal() {
-            document.getElementById('coverLetterModal').style.display = 'none';
-            currentJobForCoverLetter = null;
-        }
-
-        function loadUserInfo() {
-            // Load saved user information from localStorage
-            const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-            
-            document.getElementById('applicantName').value = userInfo.name || '';
-            document.getElementById('applicantEmail').value = userInfo.email || '';
-            document.getElementById('applicantPhone').value = userInfo.phone || '';
-            document.getElementById('applicantAddress').value = userInfo.address || '';
-        }
-
-        function saveUserInfo() {
-            // Save user information for future use
-            const userInfo = {
-                name: document.getElementById('applicantName').value,
-                email: document.getElementById('applicantEmail').value,
-                phone: document.getElementById('applicantPhone').value,
-                address: document.getElementById('applicantAddress').value
-            };
-            localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        }
-
-        function setupTemplateSelector() {
-            const templateCards = document.querySelectorAll('.template-card');
-            templateCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    templateCards.forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                });
-            });
-        }
-
-        function getSelectedTemplate() {
-            const selectedCard = document.querySelector('.template-card.selected');
-            return selectedCard ? selectedCard.dataset.template : 'professional';
-        }
-
-        function generateCoverLetter() {
-            if (!currentJobForCoverLetter) return;
-
-            // Save user info for future use
-            saveUserInfo();
-
-            // Get form data
-            const applicantName = document.getElementById('applicantName').value;
-            const applicantEmail = document.getElementById('applicantEmail').value;
-            const applicantPhone = document.getElementById('applicantPhone').value;
-            const applicantAddress = document.getElementById('applicantAddress').value;
-            const hiringManager = document.getElementById('hiringManager').value;
-            const companyAddress = document.getElementById('companyAddress').value;
-            const personalNote = document.getElementById('personalNote').value;
-            const keyAchievements = document.getElementById('keyAchievements').value;
-
-            // Validation
-            if (!applicantName || !applicantEmail) {
-                showNotification('Please fill in your name and email', 'error');
-                return;
-            }
-
-            if (!personalNote || !keyAchievements) {
-                showNotification('Please add your personal note and key achievements', 'error');
-                return;
-            }
-
-            const selectedTemplate = getSelectedTemplate();
-            const template = coverLetterTemplates[selectedTemplate];
-
-            // Generate current date
-            const currentDate = new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-
-            // Build cover letter
-            const coverLetter = `${applicantName}
-${applicantEmail}
-${applicantPhone}
-${applicantAddress}
-
-${currentDate}
-
-${currentJobForCoverLetter.company}
-${companyAddress || currentJobForCoverLetter.location}
-
-${template.greeting(hiringManager, currentJobForCoverLetter.company)}
-
-${template.opening(currentJobForCoverLetter.title, currentJobForCoverLetter.company)}
-
-${template.body(keyAchievements, personalNote, currentJobForCoverLetter.title)}
-
-${template.closing()}
-
-Sincerely,
-${applicantName}`;
-
-            // Display the cover letter
-            document.getElementById('coverLetterPreview').textContent = coverLetter;
-            document.getElementById('coverLetterPreview').style.display = 'block';
-            document.getElementById('downloadBtn').style.display = 'inline-block';
-            document.getElementById('copyBtn').style.display = 'inline-block';
-
-            showNotification('Cover letter generated successfully!', 'success');
-        }
-
-        function copyCoverLetter() {
-            const coverLetterText = document.getElementById('coverLetterPreview').textContent;
-            navigator.clipboard.writeText(coverLetterText).then(() => {
-                showNotification('Cover letter copied to clipboard!', 'success');
-            }).catch(() => {
-                showNotification('Failed to copy to clipboard', 'error');
-            });
-        }
-
-        function downloadCoverLetter() {
-            const coverLetterText = document.getElementById('coverLetterPreview').textContent;
-            const blob = new Blob([coverLetterText], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Cover_Letter_${currentJobForCoverLetter.company}_${currentJobForCoverLetter.title.replace(/\s+/g, '_')}.txt`;
-            link.click();
-            URL.revokeObjectURL(url);
-            showNotification('Cover letter downloaded!', 'success');
-        }
-
-        // Clear resume function
-        function clearResume() {
-            if (confirm('Are you sure you want to clear your resume? This cannot be undone.')) {
-                document.getElementById('masterResume').value = '';
-                document.getElementById('fileInfo').classList.remove('show');
-                document.getElementById('progressBar').classList.remove('show');
-                localStorage.removeItem('masterResume');
-                showNotification('Resume cleared', 'info');
-            }
+Posted: ${formatDate(job.posted)}
+Source: ${job.source}`);
         }
 
         // Utility functions
@@ -1524,213 +647,44 @@ ${applicantName}`;
             }, 4000);
         }
 
-        // Search functionality
-        function searchJobs() {
-            const query = document.getElementById('jobQuery').value.toLowerCase();
-            const location = document.getElementById('locationQuery').value.toLowerCase();
-            const jobType = document.getElementById('jobTypeFilter').value;
-
-            currentJobs = jobDatabase.filter(job => {
-                const matchesQuery = !query || 
-                    job.title.toLowerCase().includes(query) ||
-                    job.company.toLowerCase().includes(query) ||
-                    job.description.toLowerCase().includes(query) ||
-                    job.requirements.some(req => req.toLowerCase().includes(query));
-
-                const matchesLocation = !location || 
-                    job.location.toLowerCase().includes(location);
-
-                const matchesType = !jobType || job.type === jobType;
-
-                return matchesQuery && matchesLocation && matchesType;
+        // API source selector
+        function setupAPISelector() {
+            const apiOptions = document.querySelectorAll('.api-option');
+            apiOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    if (option.classList.contains('coming-soon')) {
+                        showNotification('This API integration is coming soon! 🚀', 'info');
+                        return;
+                    }
+                    
+                    apiOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    currentSource = option.dataset.source;
+                    updateAPIStatus();
+                });
             });
-
-            renderJobs();
-            updateStats();
-            showNotification(`Found ${currentJobs.length} jobs matching your criteria`, 'success');
         }
 
-        // Render jobs
-        function renderJobs() {
-            const container = document.getElementById('jobsContainer');
+        function updateAPIStatus() {
+            const statusEl = document.getElementById('apiStatus');
+            const api = JOB_APIS[currentSource];
             
-            if (currentJobs.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>🔍 No jobs found</h3>
-                        <p>Try adjusting your search criteria</p>
-                    </div>
-                `;
-                return;
+            if (api.enabled) {
+                statusEl.className = 'api-status online';
+                statusEl.innerHTML = `✅ Connected to ${api.name} - Ready to search real jobs!`;
+            } else {
+                statusEl.className = 'api-status offline';
+                statusEl.innerHTML = `🔧 Currently using demo data - Real job APIs coming soon!`;
             }
-
-            container.innerHTML = currentJobs.map(job => `
-                <div class="job-card">
-                    <div class="job-title">${job.title}</div>
-                    <div class="job-company">${job.company}</div>
-                    <div class="job-meta">
-                        📍 ${job.location} • 
-                        ${job.type.charAt(0).toUpperCase() + job.type.slice(1).replace('-', ' ')} • 
-                        Posted ${formatDate(job.posted)}
-                    </div>
-                    <div class="job-meta">💰 ${job.salary}</div>
-                    <div class="job-description">${truncateText(job.description, 200)}</div>
-                    <div class="job-actions">
-                        <button class="btn btn-secondary" onclick="viewJobDetails('${job.id}')">View Details</button>
-                        <button class="btn btn-primary" onclick="tailorResume('${job.id}')">Tailor Resume</button>
-                        <button class="btn btn-cover-letter" onclick="openCoverLetterModal('${job.id}')">Cover Letter</button>
-                        <button class="btn btn-success" onclick="applyToJob('${job.id}')">Quick Apply</button>
-                    </div>
-                </div>
-            `).join('');
         }
 
-        // Job actions
-        function viewJobDetails(jobId) {
-            const job = jobDatabase.find(j => j.id === jobId);
-            if (!job) return;
-
-            alert(`📋 Job Details
-
-Title: ${job.title}
-Company: ${job.company}
-Location: ${job.location}
-Type: ${job.type.charAt(0).toUpperCase() + job.type.slice(1).replace('-', ' ')}
-Salary: ${job.salary}
-
-Description:
-${job.description}
-
-Requirements:
-${job.requirements.join(', ')}
-
-Posted: ${formatDate(job.posted)}`);
-        }
-
-        function tailorResume(jobId) {
-            const resume = document.getElementById('masterResume').value;
-            if (!resume.trim()) {
-                showNotification('Please add your master resume first!', 'error');
-                return;
-            }
-
-            const job = jobDatabase.find(j => j.id === jobId);
-            if (!job) return;
-
-            showNotification('AI is tailoring your resume...', 'info');
-
-            // Simulate AI processing delay
-            setTimeout(() => {
-                const tailoredData = simulateAIResumeProcessing(resume, job);
-                showNotification(`Resume tailored for ${job.title} - ${tailoredData.matchScore}% match!`, 'success');
-                
-                // Open tailored resume modal
-                openTailoredResumeModal(jobId, tailoredData);
-            }, 2000);
-        }
-
-        function applyToJob(jobId) {
-            const job = jobDatabase.find(j => j.id === jobId);
-            if (!job) return;
-
-            const resume = document.getElementById('masterResume').value;
-            if (!resume.trim()) {
-                showNotification('Please add your resume before applying!', 'error');
-                return;
-            }
-
-            // Add to applications
-            applications.push({
-                id: Date.now(),
-                jobId: jobId,
-                jobTitle: job.title,
-                company: job.company,
-                appliedDate: new Date(),
-                status: 'applied'
-            });
-
-            updateStats();
-            showNotification(`Successfully applied to ${job.title} at ${job.company}!`, 'success');
-        }
-
-        // Resume functions
-        function saveResume() {
-            const resume = document.getElementById('masterResume').value;
-            if (!resume.trim()) {
-                showNotification('Please enter your resume content first', 'error');
-                return;
-            }
-
-            localStorage.setItem('masterResume', resume);
-            showNotification('Resume saved successfully!', 'success');
-        }
-
-        function analyzeResume() {
-            const resume = document.getElementById('masterResume').value;
-            if (!resume.trim()) {
-                showNotification('Please enter your resume content first', 'error');
-                return;
-            }
-
-            // Simulate ATS analysis
-            setTimeout(() => {
-                const score = Math.floor(Math.random() * 20) + 80; // 80-99%
-                alert(`🤖 ATS Analysis Results
-
-Overall Score: ${score}%
-
-✅ Strengths:
-• Good keyword optimization
-• Professional formatting
-• Clear section structure
-
-💡 Suggestions:
-• Add more industry-specific keywords
-• Include quantifiable achievements
-• Consider adding a skills section
-
-Your resume is well-optimized for Applicant Tracking Systems!`);
-            }, 1500);
-
-            showNotification('Analyzing your resume with AI...', 'info');
-        }
-
-        // Update statistics
-        function updateStats() {
-            document.getElementById('totalJobs').textContent = currentJobs.length;
-            document.getElementById('appliedJobs').textContent = applications.length;
-            document.getElementById('savedJobs').textContent = savedJobs.length;
-        }
-
-        // Close modal when clicking outside
-        window.onclick = (event) => {
-            const coverLetterModal = document.getElementById('coverLetterModal');
-            const tailoredResumeModal = document.getElementById('tailoredResumeModal');
-            
-            if (event.target === coverLetterModal) {
-                closeCoverLetterModal();
-            }
-            if (event.target === tailoredResumeModal) {
-                closeTailoredResumeModal();
-            }
-        };
-
-        // Initialize app
+        // Initialize the app
         function initializeApp() {
-            console.log('📊 Initializing AI Job Search Assistant...');
+            console.log('📊 Initializing Production Job Search...');
             
-            // Setup file upload
-            setupFileUpload();
+            setupAPISelector();
+            updateAPIStatus();
             
-            // Setup template selector
-            setupTemplateSelector();
-            
-            // Load saved resume
-            const savedResume = localStorage.getItem('masterResume');
-            if (savedResume) {
-                document.getElementById('masterResume').value = savedResume;
-            }
-
             // Setup event listeners
             document.getElementById('jobQuery').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') searchJobs();
@@ -1742,23 +696,14 @@ Your resume is well-optimized for Applicant Tracking Systems!`);
 
             document.getElementById('jobTypeFilter').addEventListener('change', searchJobs);
 
-            // Auto-save resume
-            document.getElementById('masterResume').addEventListener('input', () => {
-                const content = document.getElementById('masterResume').value;
-                if (content.trim()) {
-                    localStorage.setItem('masterResume', content);
-                }
-            });
-
-            // Initial render
-            renderJobs();
-            updateStats();
-
-            console.log(`✅ Loaded ${jobDatabase.length} jobs successfully!`);
-            showNotification('AI Job Search Assistant ready with Cover Letter Generator!', 'success');
+            // Initial load
+            searchJobs();
+            
+            console.log('✅ Production app ready!');
+            showNotification('🚀 AI Job Search Assistant ready! Try searching for real jobs.', 'success');
         }
 
-        // Start the app when page loads
+        // Start the app
         document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
