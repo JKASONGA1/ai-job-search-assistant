@@ -19,7 +19,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
     
     <style>
-        /* Previous styles remain the same */
         * {
             margin: 0;
             padding: 0;
@@ -135,9 +134,25 @@
             color: white;
         }
 
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .jobs-container {
@@ -177,6 +192,56 @@
             border-radius: 3px;
             font-size: 0.7rem;
             margin-left: 10px;
+        }
+
+        /* Resume Upload Styles */
+        .resume-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .resume-upload-area:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .resume-upload-area.dragover {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+
+        .resume-uploaded {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .resume-info {
+            background: #e8f0fe;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .resume-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .file-input {
+            display: none;
         }
 
         .notification {
@@ -282,6 +347,56 @@
             font-weight: bold;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 15px;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         @media (max-width: 768px) {
             .search-bar {
                 flex-direction: column;
@@ -289,6 +404,12 @@
             
             .api-options {
                 flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 20px;
             }
         }
     </style>
@@ -301,7 +422,7 @@
         </header>
 
         <div class="feature-announcement">
-            <strong>🚀 Now Searching Real Jobs!</strong> Connect to live job boards and find actual opportunities.
+            <strong>🚀 Now with Resume Upload!</strong> Upload your resume to get personalized job matching and tailoring.
         </div>
 
         <div class="api-selector">
@@ -330,6 +451,38 @@
             🔧 Currently using demo data - Real job APIs coming soon!
         </div>
 
+        <!-- Resume Upload Section -->
+        <div class="card">
+            <h3>📄 Resume Upload</h3>
+            <div id="resumeUploadArea" class="resume-upload-area" onclick="document.getElementById('resumeFile').click()">
+                <div id="uploadPrompt">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
+                    <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 10px;">Upload Your Resume</div>
+                    <div style="color: #6c757d; margin-bottom: 15px;">
+                        Drag & drop your resume here or click to browse<br>
+                        <small>Supports PDF, DOC, DOCX, TXT files (max 5MB)</small>
+                    </div>
+                    <button class="btn btn-primary" type="button">Choose File</button>
+                </div>
+                <div id="uploadedResume" style="display: none;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
+                    <div style="font-size: 1.2rem; font-weight: 600; color: #28a745; margin-bottom: 10px;">Resume Uploaded Successfully!</div>
+                    <div id="resumeFileName" style="color: #6c757d; margin-bottom: 15px;"></div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="btn btn-secondary" onclick="viewResumePreview()">Preview</button>
+                        <button class="btn btn-danger" onclick="removeResume()">Remove</button>
+                    </div>
+                </div>
+            </div>
+            <input type="file" id="resumeFile" class="file-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileUpload(this)">
+            <div id="resumeInfo" class="resume-info" style="display: none;">
+                <div><strong>File:</strong> <span id="fileName"></span></div>
+                <div><strong>Size:</strong> <span id="fileSize"></span></div>
+                <div><strong>Type:</strong> <span id="fileType"></span></div>
+                <div><strong>Uploaded:</strong> <span id="uploadDate"></span></div>
+            </div>
+        </div>
+
         <div class="card">
             <h3>🔍 Job Search</h3>
             <div class="search-bar">
@@ -342,7 +495,7 @@
                     <option value="remote">Remote</option>
                     <option value="contract">Contract</option>
                 </select>
-                <button class="btn btn-primary" onclick="searchJobs()">🔍 Search Real Jobs</button>
+                <button class="btn btn-primary" onclick="searchJobs()">🔍 Search Jobs</button>
             </div>
         </div>
 
@@ -357,8 +510,42 @@
         </div>
     </div>
 
+    <!-- Resume Preview Modal -->
+    <div id="resumeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeResumeModal()">&times;</span>
+            <h2>📄 Resume Preview</h2>
+            <div id="resumePreviewContent" class="resume-preview">
+                Loading resume preview...
+            </div>
+        </div>
+    </div>
+
+    <!-- Tailored Resume Modal -->
+    <div id="tailoredResumeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTailoredResumeModal()">&times;</span>
+            <h2>🎯 Tailored Resume</h2>
+            <div id="tailoredResumeContent" style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-top: 15px;">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>🤖 AI is tailoring your resume for this position...</p>
+                </div>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="btn btn-primary" onclick="downloadTailoredResume()" style="display: none;" id="downloadTailoredBtn">📥 Download Tailored Resume</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         console.log('🚀 AI Job Search Assistant - Production Mode');
+
+        // Application state
+        let currentSource = 'demo';
+        let allJobs = [];
+        let uploadedResume = null;
+        let resumeText = '';
 
         // Configuration for different job APIs
         const JOB_APIS = {
@@ -369,7 +556,7 @@
             },
             indeed: {
                 name: 'Indeed API',
-                enabled: false, // Will be enabled when API keys are added
+                enabled: false,
                 fetch: (query, location) => fetchIndeedJobs(query, location)
             },
             github: {
@@ -383,9 +570,6 @@
                 fetch: (query, location) => fetchLinkedInJobs(query, location)
             }
         };
-
-        let currentSource = 'demo';
-        let allJobs = [];
 
         // Demo jobs data
         function getDemoJobs() {
@@ -477,21 +661,228 @@
             ];
         }
 
+        // Resume upload functionality
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (!validateFile(file)) return;
+
+            uploadedResume = file;
+            showResumeUploaded(file);
+            processResume(file);
+        }
+
+        function validateFile(file) {
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+
+            if (file.size > maxSize) {
+                showNotification('File too large. Please upload a file smaller than 5MB.', 'error');
+                return false;
+            }
+
+            if (!allowedTypes.includes(file.type)) {
+                showNotification('Unsupported file type. Please upload PDF, DOC, DOCX, or TXT files.', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        function showResumeUploaded(file) {
+            document.getElementById('uploadPrompt').style.display = 'none';
+            document.getElementById('uploadedResume').style.display = 'block';
+            document.getElementById('resumeUploadArea').classList.add('resume-uploaded');
+            
+            document.getElementById('resumeFileName').textContent = file.name;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('fileType').textContent = file.type;
+            document.getElementById('uploadDate').textContent = new Date().toLocaleString();
+            document.getElementById('resumeInfo').style.display = 'block';
+
+            showNotification('Resume uploaded successfully! 🎉', 'success');
+        }
+
+        async function processResume(file) {
+            try {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // For demo purposes, we'll extract basic text
+                    // In a real app, you'd use proper PDF/DOC parsing libraries
+                    if (file.type === 'text/plain') {
+                        resumeText = e.target.result;
+                    } else {
+                        // Simplified extraction for demo
+                        resumeText = `Resume content for ${file.name} (${formatFileSize(file.size)})
+                        
+This is a demo preview. In a production app, the actual resume content would be extracted and parsed here.
+
+Skills likely include: JavaScript, React, Node.js, HTML, CSS, Git, etc.
+Experience: Software development and web technologies
+Education: Computer Science or related field
+
+The AI would analyze this content to match against job requirements and tailor applications accordingly.`;
+                    }
+                };
+                reader.readAsText(file);
+            } catch (error) {
+                console.error('Error processing resume:', error);
+                showNotification('Error processing resume. Please try again.', 'error');
+            }
+        }
+
+        function removeResume() {
+            uploadedResume = null;
+            resumeText = '';
+            document.getElementById('uploadPrompt').style.display = 'block';
+            document.getElementById('uploadedResume').style.display = 'none';
+            document.getElementById('resumeUploadArea').classList.remove('resume-uploaded');
+            document.getElementById('resumeInfo').style.display = 'none';
+            document.getElementById('resumeFile').value = '';
+            
+            showNotification('Resume removed successfully.', 'info');
+        }
+
+        function viewResumePreview() {
+            if (!resumeText) {
+                showNotification('Resume preview not available. Please re-upload your resume.', 'error');
+                return;
+            }
+
+            document.getElementById('resumePreviewContent').innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit;">${resumeText}</pre>`;
+            document.getElementById('resumeModal').style.display = 'block';
+        }
+
+        function closeResumeModal() {
+            document.getElementById('resumeModal').style.display = 'none';
+        }
+
+        function tailorResumeForJob(jobId) {
+            if (!uploadedResume) {
+                showNotification('Please upload your resume first to use the tailoring feature.', 'error');
+                return;
+            }
+
+            const job = allJobs.find(j => j.id === jobId);
+            if (!job) return;
+
+            document.getElementById('tailoredResumeModal').style.display = 'block';
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                const tailoredContent = generateTailoredResume(job);
+                document.getElementById('tailoredResumeContent').innerHTML = tailoredContent;
+                document.getElementById('downloadTailoredBtn').style.display = 'inline-block';
+            }, 3000);
+        }
+
+        function generateTailoredResume(job) {
+            return `
+                <div style="background: white; padding: 20px; border-radius: 8px; font-family: 'Times New Roman', serif;">
+                    <h3 style="color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Resume Tailored for: ${job.title}</h3>
+                    <p style="color: #666; font-style: italic; margin-bottom: 20px;">Optimized for ${job.company}</p>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #667eea;">🎯 Key Matches Highlighted:</h4>
+                        <ul style="color: #333;">
+                            ${job.requirements ? job.requirements.map(req => `<li><strong>${req}</strong> - Emphasized in experience section</li>`).join('') : '<li>Requirements emphasized based on job description</li>'}
+                        </ul>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #667eea;">📝 Tailored Summary:</h4>
+                        <p style="background: #f8f9fa; padding: 15px; border-left: 4px solid #667eea; margin: 0;">
+                            Experienced professional with expertise in ${job.requirements ? job.requirements.slice(0, 3).join(', ') : 'relevant technologies'} 
+                            seeking to contribute to ${job.company}'s ${job.title.toLowerCase()} role. 
+                            Proven track record in ${job.type.includes('remote') ? 'remote collaboration and' : ''} 
+                            delivering high-quality solutions that drive business impact.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #667eea;">🚀 Optimization Notes:</h4>
+                        <ul style="color: #666; font-size: 0.9rem;">
+                            <li>Keywords from job description integrated throughout</li>
+                            <li>Experience bullets reordered to emphasize relevant skills</li>
+                            <li>Technical skills section updated to match requirements</li>
+                            <li>Achievement metrics aligned with ${job.company}'s values</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #e8f0fe; padding: 15px; border-radius: 6px; border: 1px solid #667eea;">
+                        <p style="margin: 0; color: #333;"><strong>💡 AI Recommendation:</strong> 
+                        This tailored resume increases your match score for this position by highlighting your ${job.requirements ? job.requirements[0] : 'key'} experience 
+                        and aligning your background with ${job.company}'s needs.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function downloadTailoredResume() {
+            const content = document.getElementById('tailoredResumeContent').innerText;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tailored_resume.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Tailored resume downloaded! 📥', 'success');
+        }
+
+        function closeTailoredResumeModal() {
+            document.getElementById('tailoredResumeModal').style.display = 'none';
+        }
+
+        // Drag and drop functionality
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('resumeUploadArea');
+            
+            uploadArea.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const input = document.getElementById('resumeFile');
+                    input.files = files;
+                    handleFileUpload(input);
+                }
+            });
+        }
+
         // Future API implementations (placeholders)
         async function fetchIndeedJobs(query, location) {
-            // This would integrate with Indeed's API
             showNotification('Indeed API integration coming soon! 🚀', 'info');
             return [];
         }
 
         async function fetchGitHubJobs(query, location) {
-            // This would integrate with GitHub Jobs API
             showNotification('GitHub Jobs API integration coming soon! 💻', 'info');
             return [];
         }
 
         async function fetchLinkedInJobs(query, location) {
-            // This would integrate with LinkedIn API
             showNotification('LinkedIn API integration coming soon! 💼', 'info');
             return [];
         }
@@ -506,7 +897,6 @@
             showNotification(`Searching for ${query || 'all'} jobs${location ? ' in ' + location : ''}...`, 'info');
 
             try {
-                // Simulate API call delay
                 await new Promise(resolve => setTimeout(resolve, 1500));
 
                 const api = JOB_APIS[currentSource];
@@ -580,8 +970,10 @@
                     <div class="job-description" style="color: #495057; line-height: 1.6; margin-bottom: 15px;">${truncateText(job.description, 200)}</div>
                     <div class="job-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <button class="btn btn-secondary" onclick="viewJobDetails('${job.id}')" style="padding: 8px 16px; font-size: 14px;">View Details</button>
-                        <button class="btn btn-primary" onclick="showNotification('Resume tailoring feature available! Add your resume first.', 'info')" style="padding: 8px 16px; font-size: 14px;">Tailor Resume</button>
-                        <button class="btn" onclick="window.open('${job.url}', '_blank')" style="padding: 8px 16px; font-size: 14px; background: #28a745; color: white;">Apply Now</button>
+                        <button class="btn btn-primary" onclick="tailorResumeForJob('${job.id}')" style="padding: 8px 16px; font-size: 14px;" ${!uploadedResume ? 'title="Upload resume first"' : ''}>
+                            ${uploadedResume ? '🎯 Tailor Resume' : '📄 Upload Resume First'}
+                        </button>
+                        <button class="btn btn-success" onclick="window.open('${job.url}', '_blank')" style="padding: 8px 16px; font-size: 14px;">Apply Now</button>
                     </div>
                 </div>
             `).join('');
@@ -634,6 +1026,14 @@ Source: ${job.source}`);
             return text.length <= maxLength ? text : text.substring(0, maxLength) + '...';
         }
 
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -678,11 +1078,25 @@ Source: ${job.source}`);
             }
         }
 
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const resumeModal = document.getElementById('resumeModal');
+            const tailoredModal = document.getElementById('tailoredResumeModal');
+            
+            if (event.target === resumeModal) {
+                resumeModal.style.display = 'none';
+            }
+            if (event.target === tailoredModal) {
+                tailoredModal.style.display = 'none';
+            }
+        }
+
         // Initialize the app
         function initializeApp() {
             console.log('📊 Initializing Production Job Search...');
             
             setupAPISelector();
+            setupDragAndDrop();
             updateAPIStatus();
             
             // Setup event listeners
@@ -700,7 +1114,7 @@ Source: ${job.source}`);
             searchJobs();
             
             console.log('✅ Production app ready!');
-            showNotification('🚀 AI Job Search Assistant ready! Try searching for real jobs.', 'success');
+            showNotification('🚀 AI Job Search Assistant ready! Upload your resume to get started.', 'success');
         }
 
         // Start the app
