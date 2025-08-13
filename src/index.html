@@ -329,78 +329,9 @@
             text-align: center;
         }
 
-        .ats-score {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .ats-score.warning {
-            background: linear-gradient(135deg, #ffc107, #fd7e14);
-        }
-
-        .ats-score.danger {
-            background: linear-gradient(135deg, #dc3545, #e83e8c);
-        }
-
-        .ats-section {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
-        }
-
-        .ats-issue {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .ats-issue.critical {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-        }
-
-        .ats-issue.warning {
-            background: #fff3cd;
-            border-color: #ffeaa7;
-        }
-
-        .ats-issue.success {
-            background: #d4edda;
-            border-color: #c3e6cb;
-        }
-
-        .ats-keywords {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .ats-keyword {
-            background: #e9ecef;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-
-        .ats-keyword.found {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .ats-keyword.missing {
-            background: #f8d7da;
-            color: #721c24;
+        .coming-soon {
+            opacity: 0.7;
+            position: relative;
         }
 
         .coming-soon::after {
@@ -522,7 +453,7 @@
 
         <!-- Resume Upload Section -->
         <div class="card">
-            <h3>📄 Resume Upload & ATS Testing</h3>
+            <h3>📄 Resume Upload</h3>
             <div id="resumeUploadArea" class="resume-upload-area" onclick="document.getElementById('resumeFile').click()">
                 <div id="uploadPrompt">
                     <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
@@ -539,7 +470,6 @@
                     <div id="resumeFileName" style="color: #6c757d; margin-bottom: 15px;"></div>
                     <div style="display: flex; gap: 10px; justify-content: center;">
                         <button class="btn btn-secondary" onclick="viewResumePreview()">Preview</button>
-                        <button class="btn btn-primary" onclick="runATSTest()">🔍 ATS Test</button>
                         <button class="btn btn-danger" onclick="removeResume()">Remove</button>
                     </div>
                 </div>
@@ -580,19 +510,6 @@
         </div>
     </div>
 
-    <!-- ATS Test Results Modal -->
-    <div id="atsTestModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeATSModal()">&times;</span>
-            <h2>🔍 ATS Compatibility Test Results</h2>
-            <div id="atsTestContent">
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>🤖 Analyzing your resume for ATS compatibility...</p>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Resume Preview Modal -->
     <div id="resumeModal" class="modal">
         <div class="modal-content">
@@ -817,347 +734,6 @@ The AI would analyze this content to match against job requirements and tailor a
             }
         }
 
-        // ATS Testing functionality
-        function runATSTest() {
-            if (!uploadedResume || !resumeText) {
-                showNotification('Please upload your resume first to run ATS testing.', 'error');
-                return;
-            }
-
-            document.getElementById('atsTestModal').style.display = 'block';
-            
-            // Simulate ATS analysis processing
-            setTimeout(() => {
-                const atsResults = performATSAnalysis(resumeText);
-                displayATSResults(atsResults);
-            }, 3000);
-        }
-
-        function performATSAnalysis(resumeText) {
-            const text = resumeText.toLowerCase();
-            
-            // ATS Compatibility Checks
-            const checks = {
-                formatting: checkFormatting(text),
-                keywords: analyzeKeywords(text),
-                sections: checkSections(text),
-                contact: checkContactInfo(text),
-                readability: checkReadability(text),
-                fileFormat: checkFileFormat(),
-                length: checkResumeLength(text)
-            };
-
-            // Calculate overall score
-            const totalChecks = Object.keys(checks).length;
-            const passedChecks = Object.values(checks).filter(check => check.passed).length;
-            const score = Math.round((passedChecks / totalChecks) * 100);
-
-            return {
-                score: score,
-                checks: checks,
-                recommendations: generateRecommendations(checks),
-                keywords: extractKeywords(text)
-            };
-        }
-
-        function checkFormatting(text) {
-            const issues = [];
-            let score = 100;
-
-            // Check for complex formatting indicators
-            if (text.includes('│') || text.includes('┌') || text.includes('└')) {
-                issues.push('Tables and complex borders may not parse correctly in ATS');
-                score -= 20;
-            }
-
-            if (text.includes('●') || text.includes('•')) {
-                // This is actually good for ATS
-            } else {
-                issues.push('Consider using bullet points (• or -) for better readability');
-                score -= 10;
-            }
-
-            return {
-                passed: score >= 80,
-                score: score,
-                issues: issues,
-                category: 'Formatting'
-            };
-        }
-
-        function analyzeKeywords(text) {
-            const commonSkills = [
-                'javascript', 'react', 'node.js', 'python', 'java', 'html', 'css',
-                'management', 'leadership', 'communication', 'teamwork', 'agile',
-                'project management', 'data analysis', 'sql', 'git', 'aws'
-            ];
-
-            const foundKeywords = commonSkills.filter(skill => 
-                text.includes(skill) || text.includes(skill.replace('.', ''))
-            );
-
-            const keywordDensity = foundKeywords.length / commonSkills.length * 100;
-
-            return {
-                passed: keywordDensity >= 30,
-                score: Math.min(keywordDensity * 2, 100),
-                foundKeywords: foundKeywords,
-                missingKeywords: commonSkills.filter(skill => !foundKeywords.includes(skill)),
-                category: 'Keywords & Skills'
-            };
-        }
-
-        function checkSections(text) {
-            const requiredSections = [
-                { name: 'Contact Information', keywords: ['email', 'phone', '@'] },
-                { name: 'Experience/Work History', keywords: ['experience', 'work', 'employed', 'position'] },
-                { name: 'Skills', keywords: ['skills', 'technologies', 'proficient'] },
-                { name: 'Education', keywords: ['education', 'degree', 'university', 'college'] }
-            ];
-
-            const foundSections = requiredSections.filter(section =>
-                section.keywords.some(keyword => text.includes(keyword))
-            );
-
-            return {
-                passed: foundSections.length >= 3,
-                score: (foundSections.length / requiredSections.length) * 100,
-                foundSections: foundSections.map(s => s.name),
-                missingSections: requiredSections
-                    .filter(section => !foundSections.includes(section))
-                    .map(s => s.name),
-                category: 'Resume Sections'
-            };
-        }
-
-        function checkContactInfo(text) {
-            const hasEmail = /@/.test(text);
-            const hasPhone = /\d{3}[-.]?\d{3}[-.]?\d{4}/.test(text) || /\(\d{3}\)/.test(text);
-            
-            let score = 0;
-            const issues = [];
-
-            if (hasEmail) score += 50;
-            else issues.push('Email address not detected');
-
-            if (hasPhone) score += 50;
-            else issues.push('Phone number not detected');
-
-            return {
-                passed: score >= 50,
-                score: score,
-                issues: issues,
-                category: 'Contact Information'
-            };
-        }
-
-        function checkReadability(text) {
-            const words = text.split(/\s+/).length;
-            const sentences = text.split(/[.!?]+/).length;
-            const avgWordsPerSentence = words / sentences;
-
-            let score = 100;
-            const issues = [];
-
-            if (avgWordsPerSentence > 25) {
-                issues.push('Consider shorter sentences for better ATS parsing');
-                score -= 20;
-            }
-
-            if (text.length < 200) {
-                issues.push('Resume content seems too brief');
-                score -= 30;
-            }
-
-            return {
-                passed: score >= 70,
-                score: score,
-                issues: issues,
-                category: 'Readability'
-            };
-        }
-
-        function checkFileFormat() {
-            const format = uploadedResume ? uploadedResume.type : 'unknown';
-            let score = 100;
-            const issues = [];
-
-            if (format === 'application/pdf') {
-                // PDF is generally good for ATS
-            } else if (format.includes('word') || format.includes('doc')) {
-                // Word docs are also ATS-friendly
-            } else {
-                issues.push('Consider using PDF or Word format for better ATS compatibility');
-                score -= 30;
-            }
-
-            return {
-                passed: score >= 70,
-                score: score,
-                issues: issues,
-                category: 'File Format'
-            };
-        }
-
-        function checkResumeLength(text) {
-            const wordCount = text.split(/\s+/).length;
-            let score = 100;
-            const issues = [];
-
-            if (wordCount < 200) {
-                issues.push('Resume may be too short - consider adding more detail');
-                score -= 40;
-            } else if (wordCount > 1000) {
-                issues.push('Resume may be too long - consider condensing to 1-2 pages');
-                score -= 20;
-            }
-
-            return {
-                passed: score >= 80,
-                score: score,
-                wordCount: wordCount,
-                issues: issues,
-                category: 'Resume Length'
-            };
-        }
-
-        function generateRecommendations(checks) {
-            const recommendations = [];
-
-            Object.values(checks).forEach(check => {
-                if (!check.passed && check.issues) {
-                    recommendations.push(...check.issues);
-                }
-            });
-
-            // Add specific improvement suggestions
-            recommendations.push(
-                'Use standard section headers: Summary, Experience, Skills, Education',
-                'Include relevant keywords from job descriptions',
-                'Use consistent date formatting (MM/YYYY)',
-                'Avoid images, graphics, and complex formatting',
-                'Use standard fonts like Arial, Calibri, or Times New Roman'
-            );
-
-            return [...new Set(recommendations)]; // Remove duplicates
-        }
-
-        function extractKeywords(text) {
-            const commonKeywords = [
-                'leadership', 'management', 'communication', 'teamwork', 'problem-solving',
-                'javascript', 'python', 'react', 'node.js', 'sql', 'aws', 'git',
-                'agile', 'scrum', 'project management', 'data analysis', 'marketing'
-            ];
-
-            return commonKeywords.filter(keyword => 
-                text.includes(keyword.toLowerCase())
-            );
-        }
-
-        function displayATSResults(results) {
-            const content = document.getElementById('atsTestContent');
-            const scoreClass = results.score >= 80 ? 'success' : results.score >= 60 ? 'warning' : 'danger';
-            
-            content.innerHTML = `
-                <div class="ats-score ${scoreClass}">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">
-                        ${results.score >= 80 ? '✅' : results.score >= 60 ? '⚠️' : '❌'}
-                    </div>
-                    <div>ATS Compatibility Score: ${results.score}%</div>
-                    <div style="font-size: 1rem; font-weight: normal; margin-top: 10px;">
-                        ${results.score >= 80 ? 'Excellent! Your resume is highly ATS-friendly.' :
-                          results.score >= 60 ? 'Good, but there\'s room for improvement.' :
-                          'Needs significant improvements for ATS compatibility.'}
-                    </div>
-                </div>
-
-                <div class="ats-section">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">📊 Detailed Analysis</h4>
-                    ${Object.entries(results.checks).map(([key, check]) => `
-                        <div class="ats-issue ${check.passed ? 'success' : 'critical'}">
-                            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 10px;">
-                                <strong>${check.category}</strong>
-                                <span style="margin-left: auto;">${check.passed ? '✅' : '❌'} ${Math.round(check.score)}%</span>
-                            </div>
-                            ${check.issues && check.issues.length > 0 ? `
-                                <ul style="margin: 10px 0; padding-left: 20px;">
-                                    ${check.issues.map(issue => `<li>${issue}</li>`).join('')}
-                                </ul>
-                            ` : '<div style="color: #155724;">✓ This section looks good!</div>'}
-                            ${check.foundSections ? `
-                                <div><strong>Found sections:</strong> ${check.foundSections.join(', ')}</div>
-                            ` : ''}
-                            ${check.missingSections && check.missingSections.length > 0 ? `
-                                <div><strong>Missing sections:</strong> ${check.missingSections.join(', ')}</div>
-                            ` : ''}
-                            ${check.wordCount ? `
-                                <div><strong>Word count:</strong> ${check.wordCount} words</div>
-                            ` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-
-                ${results.keywords && results.keywords.length > 0 ? `
-                    <div class="ats-section">
-                        <h4 style="color: #667eea; margin-bottom: 15px;">🔑 Keywords Found</h4>
-                        <div class="ats-keywords">
-                            ${results.keywords.map(keyword => `
-                                <span class="ats-keyword found">${keyword}</span>
-                            `).join('')}
-                        </div>
-                    </div>
-                ` : ''}
-
-                <div class="ats-section">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">💡 Improvement Recommendations</h4>
-                    <ul style="padding-left: 20px;">
-                        ${results.recommendations.slice(0, 8).map(rec => `<li style="margin-bottom: 8px;">${rec}</li>`).join('')}
-                    </ul>
-                </div>
-
-                <div style="background: #e8f0fe; border: 1px solid #667eea; border-radius: 8px; padding: 20px; margin-top: 20px;">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">🎯 Quick ATS Tips</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-                        <div>
-                            <strong>✅ DO:</strong>
-                            <ul style="margin: 5px 0 0 20px; font-size: 0.9rem;">
-                                <li>Use standard section headers</li>
-                                <li>Include relevant keywords</li>
-                                <li>Use simple formatting</li>
-                                <li>Save as PDF or Word doc</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <strong>❌ AVOID:</strong>
-                            <ul style="margin: 5px 0 0 20px; font-size: 0.9rem;">
-                                <li>Images and graphics</li>
-                                <li>Complex tables</li>
-                                <li>Unusual fonts</li>
-                                <li>Multiple columns</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="btn btn-primary" onclick="generateATSReport()">📥 Download ATS Report</button>
-                </div>
-            `;
-        }
-
-        function generateATSReport() {
-            const reportContent = document.getElementById('atsTestContent').innerText;
-            const blob = new Blob([`ATS Compatibility Report\n\nGenerated: ${new Date().toLocaleString()}\n\n${reportContent}`], 
-                { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'ats_compatibility_report.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
         function removeResume() {
             uploadedResume = null;
             resumeText = '';
@@ -1506,16 +1082,12 @@ Source: ${job.source}`);
         window.onclick = function(event) {
             const resumeModal = document.getElementById('resumeModal');
             const tailoredModal = document.getElementById('tailoredResumeModal');
-            const atsModal = document.getElementById('atsTestModal');
             
             if (event.target === resumeModal) {
                 resumeModal.style.display = 'none';
             }
             if (event.target === tailoredModal) {
                 tailoredModal.style.display = 'none';
-            }
-            if (event.target === atsModal) {
-                atsModal.style.display = 'none';
             }
         }
 
